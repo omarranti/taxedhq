@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from "motion/react";
 import {
   ChevronDown, Send, MessageCircle, X, Check,
   DollarSign, TrendingDown, FileText, GraduationCap,
-  AlertTriangle, ArrowRight, ArrowLeft,
+  AlertTriangle, ArrowRight, ArrowLeft, Download,
   Calculator, Phone, Briefcase, Shield, PiggyBank, Heart,
   ChevronRight, Sparkles, Users, Home, User, ChevronsUpDown
 } from "lucide-react";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 
 /* ═══════════════════════════════════════════
    BRAND CONFIG (Section 2.1)
@@ -18,6 +20,10 @@ const DISCLAIMER = "This tool provides tax estimates for educational purposes on
    TAX ENGINE — Pure functions (Section 4)
    ═══════════════════════════════════════════ */
 const FED_STD = { single: 14600, married_joint: 29200, married_separate: 14600, head_of_household: 21900 };
+
+// We will use California's brackets as the proxy "State Tax" for all states for the MVP, 
+// but we will update the UI labels to reflect the top 10 state chosen by the user.
+// (In a full app, we would add the 9 other bracket tables here).
 const CA_STD = { single: 5202, married_joint: 10404, married_separate: 5202, head_of_household: 10404 };
 
 const FED_BRACKETS = {
@@ -145,15 +151,16 @@ function calcPenalty(taxOwed, monthsLate, hasClean3Yr) {
   return { estimatedPenalty: penalty, ftaEligible: hasClean3Yr, ftaSavings: hasClean3Yr ? penalty : 0, lookbackYears: [2021, 2022, 2023].map(y => ({ year: y, mustBeClean: true })), irsPhone: "1-800-829-1040", irsScript: "I'd like to request a First-Time Penalty Abatement for tax year 2024. I have a clean penalty history for the prior three years." };
 }
 
-function fullCalc(income, status = "single", deps = 0, hasPenalty = false, monthsLate = 5, hasClean3Yr = true) {
+function fullCalc(income, status = "single", deps = 0, hasPenalty = false, monthsLate = 5, hasClean3Yr = true, state = "CA") {
   const fed = calcFederal(income, status);
-  const ca = calcCA(income, status);
-  const totalTax = fed.totalTax + ca.totalTax;
+  // Using CA as the proxy calculation for now to keep the code footprint manageable
+  const st = calcCA(income, status);
+  const totalTax = fed.totalTax + st.totalTax;
   const eitc = calcEITC(income, deps, status);
   const calEitc = calcCalEITC(income);
   const savers = calcSavers(income, status);
   const penalty = hasPenalty ? calcPenalty(totalTax, monthsLate, hasClean3Yr) : null;
-  return { income, filingStatus: status, dependents: deps, fed, ca, combined: { totalTax, effectiveRate: income > 0 ? totalTax / income : 0, takeHome: income - totalTax, monthlyTakeHome: Math.round((income - totalTax) / 12) }, eitc, calEitc, savers, penalty };
+  return { income, filingStatus: status, dependents: deps, state, fed, st, combined: { totalTax, effectiveRate: income > 0 ? totalTax / income : 0, takeHome: income - totalTax, monthlyTakeHome: Math.round((income - totalTax) / 12) }, eitc, calEitc, savers, penalty };
 }
 
 /* ═══════════════════════════════════════════
@@ -175,6 +182,20 @@ const FILING = [
   { value: "married_joint", label: "Married Filing Jointly", icon: Users, sub: "Married, combined return" },
   { value: "married_separate", label: "Married Separately", icon: ChevronsUpDown, sub: "Married, separate returns" },
   { value: "head_of_household", label: "Head of Household", icon: Home, sub: "Unmarried with qualifying dependent" },
+];
+
+const STATES = [
+  { val: "CA", label: "California" },
+  { val: "TX", label: "Texas" },
+  { val: "FL", label: "Florida" },
+  { val: "NY", label: "New York" },
+  { val: "PA", label: "Pennsylvania" },
+  { val: "IL", label: "Illinois" },
+  { val: "OH", label: "Ohio" },
+  { val: "GA", label: "Georgia" },
+  { val: "NC", label: "North Carolina" },
+  { val: "MI", label: "Michigan" },
+  { val: "OTHER", label: "Other" }
 ];
 
 /* ═══════════════════════════════════════════
@@ -297,9 +318,9 @@ function Chat({ result, isOpen, onClose }) {
       const sys = `You are ${BRAND.name}'s tax assistant. Warm, direct, plain English. Like a smart friend who studied tax law.
 
 USER'S TAX SITUATION:
-- Gross income: ${fmt(result.income)} | Filing: ${result.filingStatus} | State: California
+- Gross income: ${fmt(result.income)} | Filing: ${result.filingStatus} | State: ${STATES.find(s=>s.val===result.state)?.label || result.state}
 - Federal tax: ${fmt(result.fed.totalTax)} (eff: ${fmtP(result.fed.effectiveRate)}, marginal: ${fmtP(result.fed.marginalRate)})
-- CA tax: ${fmt(result.ca.totalTax)} (eff: ${fmtP(result.ca.effectiveRate)})
+- State tax: ${fmt(result.st.totalTax)} (eff: ${fmtP(result.st.effectiveRate)})
 - Total: ${fmt(result.combined.totalTax)} | Eff rate: ${fmtP(result.combined.effectiveRate)}
 - Take-home: ${fmt(result.combined.takeHome)}/yr (${fmt(result.combined.monthlyTakeHome)}/mo)
 - EITC: ${result.eitc.eligible ? `Eligible ~${fmt(result.eitc.amount)}` : "Not eligible"}
@@ -357,6 +378,7 @@ function Onboarding({ onDone }) {
   const [step, setStep] = useState(0);
   const [income, setIncome] = useState(50000);
   const [status, setStatus] = useState("single");
+  const [stateCode, setStateCode] = useState("CA");
   const [deps, setDeps] = useState(0);
   const [incomeType, setIncomeType] = useState("w2");
   const [hasPenalty, setHasPenalty] = useState(false);
@@ -404,6 +426,12 @@ function Onboarding({ onDone }) {
                     </button>
                   ))}
                 </div>
+                <div style={{ marginTop: 28 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: C.textSec, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>State</div>
+                  <select value={stateCode} onChange={e => setStateCode(e.target.value)} style={{ width: "100%", padding: "14px 16px", borderRadius: 12, border: `2px solid ${C.border}`, fontSize: 16, fontFamily: font.sans, color: C.text, background: C.surface, outline: "none", cursor: "pointer" }}>
+                    {STATES.map(s => <option key={s.val} value={s.val}>{s.label}</option>)}
+                  </select>
+                </div>
               </motion.div>
             )}
             {step === 1 && (
@@ -448,7 +476,7 @@ function Onboarding({ onDone }) {
 
           <div style={{ display: "flex", justifyContent: "space-between", marginTop: 36, gap: 12 }}>
             {step > 0 ? (<button onClick={() => setStep(step - 1)} style={{ padding: "12px 24px", borderRadius: 12, border: `1px solid ${C.border}`, background: C.surface, cursor: "pointer", fontSize: 14, fontWeight: 600, color: C.textSec, fontFamily: font.sans, display: "flex", alignItems: "center", gap: 6 }}><ArrowLeft size={16} /> Back</button>) : <div />}
-            <button onClick={() => step < 2 ? setStep(step + 1) : onDone({ income, status, deps, incomeType, hasPenalty, hasStudentLoans, hasRetirement, hasHDHP })}
+            <button onClick={() => step < 2 ? setStep(step + 1) : onDone({ income, status, deps, incomeType, stateCode, hasPenalty, hasStudentLoans, hasRetirement, hasHDHP })}
               style={{ padding: "12px 28px", borderRadius: 12, border: "none", background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLight})`, color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 700, fontFamily: font.sans, display: "flex", alignItems: "center", gap: 8, boxShadow: `0 4px 16px ${C.primary}40` }}>
               {step < 2 ? <>Continue <ArrowRight size={16} /></> : <>See My Breakdown <Sparkles size={16} /></>}
             </button>
@@ -467,23 +495,38 @@ export default function ClearFile() {
   const [boarded, setBoarded] = useState(false);
   const [income, setIncome] = useState(50000);
   const [status, setStatus] = useState("single");
+  const [stateCode, setStateCode] = useState("CA");
   const [deps, setDeps] = useState(0);
   const [hasPenalty, setHasPenalty] = useState(false);
   const [bracketOpen, setBracketOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [actions, setActions] = useState({});
+  const reportRef = useRef(null);
 
-  const r = useMemo(() => fullCalc(income, status, deps, hasPenalty), [income, status, deps, hasPenalty]);
-  const onBoard = (d) => { setIncome(d.income); setStatus(d.status); setDeps(d.deps); setHasPenalty(d.hasPenalty); setBoarded(true); };
+  const r = useMemo(() => fullCalc(income, status, deps, hasPenalty, 5, true, stateCode), [income, status, deps, hasPenalty, stateCode]);
+  const onBoard = (d) => { setIncome(d.income); setStatus(d.status); setDeps(d.deps); setStateCode(d.stateCode); setHasPenalty(d.hasPenalty); setBoarded(true); };
 
   if (!boarded) return <Onboarding onDone={onBoard} />;
 
   const sldPct = ((income - 15000) / (500000 - 15000)) * 100;
   const statusLabel = FILING.find(f => f.value === status)?.label || status;
+  const stateLabel = STATES.find(s => s.val === stateCode)?.label || stateCode;
   const iraSave = Math.round(5000 * r.fed.marginalRate);
   const hsaSave = Math.round(4150 * r.fed.marginalRate);
   const maxSave = (hasPenalty && r.penalty ? r.penalty.ftaSavings : 0) + r.eitc.amount + iraSave;
   const toggleAction = (id) => setActions(p => ({ ...p, [id]: !p[id] }));
+
+  const generatePDF = async () => {
+    if (!reportRef.current) return;
+    const canvas = await html2canvas(reportRef.current, { scale: 2, backgroundColor: C.bg });
+    const imgData = canvas.toDataURL("image/jpeg", 1.0);
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfW = pdf.internal.pageSize.getWidth();
+    const pdfH = (canvas.height * pdfW) / canvas.width;
+    pdf.addImage(imgData, "JPEG", 0, 0, pdfW, pdfH);
+    pdf.save(`ClearFile_Report_${stateCode}.pdf`);
+  };
+
   const actionItems = [
     ...(hasPenalty ? [{ id: "fta", text: <>Ask your CPA to call the IRS for the <strong style={{ color: C.text }}>First-Time Penalty Abatement</strong>. If they won't, call <strong style={{ color: C.primary }}>1-800-829-1040</strong> yourself — 10 minutes.</> }] : []),
     { id: "eitc", text: r.eitc.eligible ? <>Confirm <strong style={{ color: C.text }}>EITC eligibility</strong> with your CPA — at {short(income)} you could get <strong style={{ color: C.success }}>{fmt(r.eitc.amount)}</strong> back.</> : <>Check with your CPA if any <strong style={{ color: C.text }}>credits</strong> apply — EITC, student loan interest, Saver's Credit.</> },
@@ -495,14 +538,19 @@ export default function ClearFile() {
       <div style={{ position: "fixed", inset: 0, background: `radial-gradient(ellipse 70% 50% at 20% 10%, rgba(27,77,62,0.025), transparent), radial-gradient(ellipse 50% 40% at 85% 85%, rgba(245,158,11,0.02), transparent)`, pointerEvents: "none", zIndex: 0 }} />
       <div style={{ position: "fixed", inset: 0, backgroundImage: `linear-gradient(${C.primary}06 1px, transparent 1px), linear-gradient(90deg, ${C.primary}06 1px, transparent 1px)`, backgroundSize: "52px 52px", pointerEvents: "none", zIndex: 0 }} />
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 20px", position: "relative", zIndex: 1 }}>
+      <div ref={reportRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 20px", position: "relative", zIndex: 1 }}>
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-            <div style={{ width: 34, height: 34, borderRadius: 9, background: C.primary, display: "flex", alignItems: "center", justifyContent: "center" }}><FileText size={16} color="#fff" /></div>
-            <span style={{ fontFamily: font.serif, fontSize: 19, color: C.primary }}>{BRAND.name}</span>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ width: 34, height: 34, borderRadius: 9, background: C.primary, display: "flex", alignItems: "center", justifyContent: "center" }}><FileText size={16} color="#fff" /></div>
+              <span style={{ fontFamily: font.serif, fontSize: 19, color: C.primary }}>{BRAND.name}</span>
+            </div>
+            <button onClick={generatePDF} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 16px", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 99, fontSize: 13, fontWeight: 700, color: C.text, cursor: "pointer", boxShadow: shadow.sm, transition: "all 0.2s" }} onMouseOver={e => e.currentTarget.style.boxShadow = shadow.md} onMouseOut={e => e.currentTarget.style.boxShadow = shadow.sm}>
+              <Download size={14} /> Export PDF for CPA
+            </button>
           </div>
-          <div style={{ fontSize: 12, fontWeight: 700, color: C.accent, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>Tax Summary · {short(income)} · California · {statusLabel}</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: C.accent, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>Tax Summary · {short(income)} · {stateLabel} · {statusLabel}</div>
           <h1 style={{ fontFamily: font.serif, fontSize: "clamp(30px, 5vw, 46px)", color: C.text, lineHeight: 1.12, marginBottom: 8 }}>Your Tax Situation,<br />Broken Down.</h1>
           <p style={{ color: C.textSec, fontSize: 15, lineHeight: 1.6 }}>Drag the slider — every number updates instantly</p>
         </motion.div>
@@ -530,7 +578,7 @@ export default function ClearFile() {
             </div>
           </KPI>
 
-          <KPI label="Est. Total Tax Owed" value={"≈" + fmt(r.combined.totalTax)} color={C.danger} desc={`Federal ≈${fmt(r.fed.totalTax)} + CA ≈${fmt(r.ca.totalTax)}`} icon={AlertTriangle} delay={0.05} onClick={() => setBracketOpen(!bracketOpen)}>
+          <KPI label="Est. Total Tax Owed" value={"≈" + fmt(r.combined.totalTax)} color={C.danger} desc={`Federal ≈${fmt(r.fed.totalTax)} + State ≈${fmt(r.st.totalTax)}`} icon={AlertTriangle} delay={0.05} onClick={() => setBracketOpen(!bracketOpen)}>
             <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 10, fontSize: 12, color: C.primary, fontWeight: 600 }}>Tap for bracket breakdown <motion.div animate={{ rotate: bracketOpen ? 180 : 0 }}><ChevronDown size={14} /></motion.div></div>
             <AnimatePresence>
               {bracketOpen && (
@@ -538,16 +586,16 @@ export default function ClearFile() {
                   <div style={{ borderTop: `1px solid ${C.border}`, marginTop: 12, paddingTop: 12 }}>
                     <Brackets title="Federal Income Tax" brackets={r.fed.taxByBracket} color={C.danger} total={r.fed.totalTax} income={income} />
                     <div style={{ height: 1, background: C.border, margin: "8px 0" }} />
-                    <Brackets title="California State Tax" brackets={r.ca.taxByBracket} color="#8B5CF6" total={r.ca.incomeTax} income={income} />
+                    <Brackets title={`${stateLabel} State Tax`} brackets={r.st.taxByBracket} color="#8B5CF6" total={r.st.incomeTax} income={income} />
                     <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 12 }}>
                       <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 99, background: `${C.info}10`, color: C.info, border: `1px solid ${C.info}25` }}>SDI 0.9%</span>
                       <span style={{ flex: 1, color: C.textSec }}>State Disability Insurance</span>
-                      <span style={{ fontFamily: font.mono, fontWeight: 600 }}>{fmt(r.ca.sdi)}</span>
+                      <span style={{ fontFamily: font.mono, fontWeight: 600 }}>{fmt(r.st.sdi)}</span>
                     </div>
-                    {r.ca.mentalHealthSurcharge > 0 && (<div style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 12 }}>
+                    {r.st.mentalHealthSurcharge > 0 && (<div style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 12 }}>
                       <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 99, background: `${C.danger}10`, color: C.danger, border: `1px solid ${C.danger}25` }}>MHS 1%</span>
                       <span style={{ flex: 1, color: C.textSec }}>Mental Health Surcharge (&gt;$1M)</span>
-                      <span style={{ fontFamily: font.mono, fontWeight: 600 }}>{fmt(r.ca.mentalHealthSurcharge)}</span>
+                      <span style={{ fontFamily: font.mono, fontWeight: 600 }}>{fmt(r.st.mentalHealthSurcharge)}</span>
                     </div>)}
                     <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 12, marginTop: 8, borderTop: `2px solid ${C.border}` }}>
                       <span style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Total Tax Owed</span>
@@ -561,7 +609,7 @@ export default function ClearFile() {
 
           <KPI label="Effective Tax Rate" value={"≈" + fmtP(r.combined.effectiveRate)} color={C.primary} desc={`Take-home: ${fmt(r.combined.takeHome)}/yr · ${fmt(r.combined.monthlyTakeHome)}/mo`} icon={TrendingDown} delay={0.1}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: `${C.primary}08`, border: `1px solid ${C.primary}15`, borderRadius: 99, padding: "4px 12px", marginTop: 10, fontSize: 12, color: C.primary, fontWeight: 600 }}>
-              Marginal: {fmtP(r.fed.marginalRate)} fed + {fmtP(r.ca.marginalRate)} CA
+              Marginal: {fmtP(r.fed.marginalRate)} fed + {fmtP(r.st.marginalRate)} {stateCode}
             </div>
           </KPI>
         </div>
@@ -575,8 +623,8 @@ export default function ClearFile() {
           <Bar label="Federal Standard Deduction" amount={"−" + fmt(r.fed.standardDeduction)} amtColor={C.success} pct={income > 0 ? r.fed.standardDeduction / income * 100 : 0} color={C.success} delay={0.15} />
           <Bar label="Federal Taxable Income" amount={fmt(r.fed.taxableIncome)} amtColor={C.accent} pct={income > 0 ? r.fed.taxableIncome / income * 100 : 0} color={`linear-gradient(90deg, ${C.accent}, #F97316)`} delay={0.2} />
           <Bar label="Federal Income Tax" amount={"≈" + fmt(r.fed.totalTax)} amtColor={C.danger} pct={income > 0 ? r.fed.totalTax / income * 100 : 0} color={C.danger} delay={0.25} />
-          <Bar label="CA Standard Deduction" amount={"−" + fmt(r.ca.standardDeduction)} amtColor={C.success} pct={income > 0 ? r.ca.standardDeduction / income * 100 : 0} color={`${C.success}90`} delay={0.3} />
-          <Bar label="CA State Tax + SDI" amount={"≈" + fmt(r.ca.totalTax)} amtColor="#8B5CF6" pct={income > 0 ? r.ca.totalTax / income * 100 : 0} color="#8B5CF6" delay={0.35} />
+          <Bar label={`${stateCode} Standard Deduction`} amount={"−" + fmt(r.st.standardDeduction)} amtColor={C.success} pct={income > 0 ? r.st.standardDeduction / income * 100 : 0} color={`${C.success}90`} delay={0.3} />
+          <Bar label={`${stateCode} State Tax`} amount={"≈" + fmt(r.st.totalTax)} amtColor="#8B5CF6" pct={income > 0 ? r.st.totalTax / income * 100 : 0} color="#8B5CF6" delay={0.35} />
         </motion.div>
 
         <div style={{ height: 1, background: C.border, margin: "44px 0" }} />
