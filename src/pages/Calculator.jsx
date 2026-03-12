@@ -163,9 +163,9 @@ const fmt = (n) => "$" + Math.round(n).toLocaleString();
 const fmtP = (r) => (r * 100).toFixed(1) + "%";
 const short = (n) => n >= 1000 ? "$" + Math.round(n / 1000) + "K" : fmt(n);
 
-const C = { primary: "#1B4D3E", primaryLight: "#2D7A5F", primaryDark: "#0F2E25", accent: "#F59E0B", accentLight: "#FCD34D", accentDark: "#D97706", success: "#10B981", warning: "#F59E0B", danger: "#EF4444", info: "#3B82F6", bg: "#FAFAF8", surface: "#FFFFFF", border: "#E5E5E0", text: "#1A1A1A", textSec: "#6B6B6B", muted: "#9CA3AF" };
+const C = { primary: "#34D399", primaryLight: "#6EE7B7", primaryDark: "#059669", accent: "#F59E0B", accentLight: "#FCD34D", accentDark: "#D97706", success: "#34D399", warning: "#F59E0B", danger: "#F87171", info: "#60A5FA", bg: "#0A0A12", surface: "rgba(255,255,255,0.07)", border: "rgba(255,255,255,0.1)", text: "#FFFFFF", textSec: "rgba(255,255,255,0.55)", muted: "rgba(255,255,255,0.32)" };
 const font = { serif: "'DM Serif Display', Georgia, serif", sans: "'DM Sans', system-ui, sans-serif", mono: "'JetBrains Mono', monospace" };
-const shadow = { sm: "0 1px 2px rgba(0,0,0,0.05)", md: "0 4px 12px rgba(0,0,0,0.08)", card: "0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03)" };
+const shadow = { sm: "0 1px 4px rgba(0,0,0,0.3)", md: "0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)", card: "0 2px 12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06)" };
 
 const FILING = [
   { value: "single", label: "Single", icon: User, sub: "Unmarried, no dependents" },
@@ -333,8 +333,8 @@ RULES:
 
   return (
     <motion.div initial={{ opacity: 0, y: 20, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.96 }}
-      style={{ position: "fixed", bottom: 96, right: 16, width: "min(400px, calc(100vw - 32px))", height: "min(560px, calc(100vh - 140px))", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 20, display: "flex", flexDirection: "column", zIndex: 999, boxShadow: "0 20px 60px rgba(0,0,0,0.15)", overflow: "hidden" }}>
-      <div style={{ padding: "14px 18px", background: C.primary, display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+      style={{ position: "fixed", bottom: 96, right: 16, width: "min(400px, calc(100vw - 32px))", height: "min(560px, calc(100vh - 140px))", background: "rgba(15,15,22,0.92)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)", border: `1px solid ${C.border}`, borderRadius: 20, display: "flex", flexDirection: "column", zIndex: 999, boxShadow: "0 24px 80px rgba(0,0,0,0.6)", overflow: "hidden" }}>
+      <div style={{ padding: "14px 18px", background: "linear-gradient(135deg, #059669, #34D399)", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
         <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}><Calculator size={16} color="#fff" /></div>
         <div style={{ flex: 1 }}><div style={{ fontSize: 14, fontWeight: 700, color: "#fff", fontFamily: font.sans }}>{BRAND.name} Assistant</div><div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }}>Knows your full situation</div></div>
         <button onClick={onClose} style={{ background: "rgba(255,255,255,0.1)", border: "none", borderRadius: 8, padding: 5, cursor: "pointer", display: "flex" }}><X size={16} color="#fff" /></button>
@@ -347,7 +347,7 @@ RULES:
         {quickQ.map(q => <button key={q} onClick={() => send(q)} style={{ background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: 11.5, fontFamily: font.sans, padding: "4px 10px", borderRadius: 99, cursor: "pointer", whiteSpace: "nowrap" }}>{q}</button>)}
       </div>
       <div style={{ display: "flex", gap: 8, padding: "10px 14px", borderTop: `1px solid ${C.border}`, background: C.bg }}>
-        <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} placeholder="Ask anything…" style={{ flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "9px 12px", fontSize: 13, fontFamily: font.sans, color: C.text, outline: "none" }} />
+        <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} placeholder="Ask anything…" style={{ flex: 1, background: "rgba(255,255,255,0.06)", border: `1px solid ${C.border}`, borderRadius: 10, padding: "9px 12px", fontSize: 13, fontFamily: font.sans, color: C.text, outline: "none" }} />
         <button onClick={() => send()} style={{ width: 36, height: 36, borderRadius: 10, background: C.primary, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Send size={14} color="#fff" /></button>
       </div>
     </motion.div>
@@ -377,12 +377,12 @@ function Onboarding({ onDone }) {
 
   return (
     <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, fontFamily: font.sans }}>
-      <div style={{ position: "fixed", inset: 0, background: `radial-gradient(ellipse 80% 60% at 30% 20%, rgba(27,77,62,0.04), transparent), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(245,158,11,0.03), transparent)`, pointerEvents: "none" }} />
-      <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} style={{ width: "100%", maxWidth: 580, background: C.surface, borderRadius: 20, boxShadow: "0 20px 60px rgba(0,0,0,0.08)", overflow: "hidden", position: "relative", zIndex: 1 }}>
+      <div style={{ position: "fixed", inset: 0, background: `radial-gradient(ellipse 60% 50% at 20% 20%, rgba(52,211,153,0.08), transparent), radial-gradient(ellipse 50% 40% at 85% 80%, rgba(167,139,250,0.07), transparent)`, pointerEvents: "none" }} />
+      <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} style={{ width: "100%", maxWidth: 580, background: "rgba(18,18,26,0.92)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 24, boxShadow: "0 32px 80px rgba(0,0,0,0.6)", overflow: "hidden", position: "relative", zIndex: 1 }}>
         <div style={{ height: 3, background: C.border }}><motion.div animate={{ width: `${((step + 1) / 3) * 100}%` }} transition={{ duration: 0.4 }} style={{ height: "100%", background: `linear-gradient(90deg, ${C.primary}, ${C.primaryLight})`, borderRadius: 3 }} /></div>
         <div style={{ padding: "clamp(24px, 6vw, 44px) clamp(20px, 6vw, 36px) clamp(24px, 6vw, 36px)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 32 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: C.primary, display: "flex", alignItems: "center", justifyContent: "center" }}><FileText size={16} color="#fff" /></div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 32 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg, #34D399, #059669)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(52,211,153,0.4)" }}><FileText size={16} color="#fff" /></div>
             <span style={{ fontFamily: font.serif, fontSize: 18, color: C.primary }}>{BRAND.name}</span>
             <span style={{ marginLeft: "auto", fontSize: 12, color: C.muted, fontWeight: 600 }}>Step {step + 1} / 3</span>
           </div>
@@ -411,7 +411,7 @@ function Onboarding({ onDone }) {
                 </div>
                 <div style={{ marginTop: 28 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: C.textSec, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>State</div>
-                  <select value={stateCode} onChange={e => setStateCode(e.target.value)} style={{ width: "100%", padding: "14px 16px", borderRadius: 12, border: `2px solid ${C.border}`, fontSize: 16, fontFamily: font.sans, color: C.text, background: C.surface, outline: "none", cursor: "pointer" }}>
+                  <select value={stateCode} onChange={e => setStateCode(e.target.value)} style={{ width: "100%", padding: "14px 16px", borderRadius: 12, border: `1px solid ${C.border}`, fontSize: 16, fontFamily: font.sans, color: C.text, background: "rgba(255,255,255,0.08)", outline: "none", cursor: "pointer" }}>
                     {STATES.map(s => <option key={s.val} value={s.val}>{s.label}</option>)}
                   </select>
                 </div>
@@ -465,7 +465,7 @@ function Onboarding({ onDone }) {
             </button>
           </div>
         </div>
-        <div style={{ padding: "14px 36px", background: C.bg, borderTop: `1px solid ${C.border}`, fontSize: 11, color: C.muted, lineHeight: 1.6 }}>{DISCLAIMER}</div>
+        <div style={{ padding: "14px 36px", background: "rgba(0,0,0,0.2)", borderTop: `1px solid ${C.border}`, fontSize: 11, color: C.muted, lineHeight: 1.6 }}>{DISCLAIMER}</div>
       </motion.div>
     </div>
   );
@@ -517,15 +517,15 @@ export default function TaxedApp() {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, fontFamily: font.sans, paddingBottom: 100 }}>
-      <div style={{ position: "fixed", inset: 0, background: `radial-gradient(ellipse 70% 50% at 20% 10%, rgba(27,77,62,0.025), transparent), radial-gradient(ellipse 50% 40% at 85% 85%, rgba(245,158,11,0.02), transparent)`, pointerEvents: "none", zIndex: 0 }} />
-      <div style={{ position: "fixed", inset: 0, backgroundImage: `linear-gradient(${C.primary}06 1px, transparent 1px), linear-gradient(90deg, ${C.primary}06 1px, transparent 1px)`, backgroundSize: "52px 52px", pointerEvents: "none", zIndex: 0 }} />
+    <div className="calculator-page" style={{ minHeight: "100vh", background: C.bg, fontFamily: font.sans, paddingBottom: 100 }}>
+      <div style={{ position: "fixed", inset: 0, background: `radial-gradient(ellipse 60% 50% at 15% 10%, rgba(52,211,153,0.08), transparent), radial-gradient(ellipse 50% 40% at 85% 85%, rgba(167,139,250,0.07), transparent)`, pointerEvents: "none", zIndex: 0 }} />
+      <div style={{ position: "fixed", inset: 0, backgroundImage: `linear-gradient(rgba(52,211,153,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(52,211,153,0.03) 1px, transparent 1px)`, backgroundSize: "52px 52px", pointerEvents: "none", zIndex: 0 }} />
 
-      <div ref={reportRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 20px", position: "relative", zIndex: 1 }}>
+      <div ref={reportRef} className="calculator-report" style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 20px", position: "relative", zIndex: 1 }}>
         <motion.div initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 10 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ width: 34, height: 34, borderRadius: 9, background: C.primary, display: "flex", alignItems: "center", justifyContent: "center" }}><FileText size={16} color="#fff" /></div>
+              <div style={{ width: 34, height: 34, borderRadius: 9, background: "linear-gradient(135deg, #34D399, #059669)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(52,211,153,0.35)" }}><FileText size={16} color="#fff" /></div>
               <span style={{ fontFamily: font.serif, fontSize: 19, color: C.primary }}>{BRAND.name}</span>
             </div>
             <button onClick={generatePDF} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 16px", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 99, fontSize: 13, fontWeight: 700, color: C.text, cursor: "pointer", boxShadow: shadow.sm, transition: "all 0.2s" }} onMouseOver={e => e.currentTarget.style.boxShadow = shadow.md} onMouseOut={e => e.currentTarget.style.boxShadow = shadow.sm}>
@@ -717,6 +717,16 @@ export default function TaxedApp() {
         {chatOpen ? <X size={20} color="#fff" /> : <MessageCircle size={20} color="#fff" />}
       </motion.button>
       <AnimatePresence>{chatOpen && <Chat result={r} isOpen={chatOpen} onClose={() => setChatOpen(false)} />}</AnimatePresence>
+      <style>{`
+        @media (max-width: 768px) {
+          .calculator-page { padding-bottom: 92px !important; }
+          .calculator-report { padding: 20px 14px !important; }
+        }
+
+        @media (max-width: 480px) {
+          .calculator-report { padding: 16px 10px !important; }
+        }
+      `}</style>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Scale } from 'lucide-react';
 
-const C = { primary: "#1B4D3E", bg: "#FAFAF8", surface: "#FFFFFF", border: "#E5E5E0", text: "#1A1A1A", textSec: "#6B6B6B", muted: "#9CA3AF", danger: "#EF4444", warning: "#F59E0B" };
+const C = { primary: "#34D399", bg: "#0A0A12", surface: "rgba(255,255,255,0.06)", border: "rgba(255,255,255,0.1)", text: "#FFFFFF", textSec: "rgba(255,255,255,0.58)", muted: "rgba(255,255,255,0.32)", danger: "#F87171", warning: "#F59E0B" };
 const font = { serif: "'DM Serif Display', Georgia, serif", sans: "'DM Sans', system-ui, sans-serif" };
 
 function Section({ title, children }) {

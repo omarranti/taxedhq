@@ -1,18 +1,28 @@
 import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const C = {
-    primary: "#1B4D3E",
-    text: "#1A1A1A",
-    textSec: "#6B6B6B"
-};
 const font = { serif: "'DM Serif Display', Georgia, serif", sans: "'DM Sans', system-ui, sans-serif" };
+
+const glass = {
+    background: 'rgba(10,10,18,0.75)',
+    backdropFilter: 'blur(40px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+};
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
     const location = useLocation();
+
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 24);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
+
+    useEffect(() => { setIsOpen(false); }, [location.pathname]);
 
     const links = [
         { name: "How it Works", path: "/#how-it-works" },
@@ -20,75 +30,126 @@ export default function Navbar() {
         { name: "Resource Hub", path: "/resources" },
     ];
 
+    const isActive = (path) => path === '/calculator' || path === '/resources'
+        ? location.pathname === path
+        : false;
+
     return (
         <nav style={{
             position: 'fixed',
             top: 0, left: 0, right: 0,
-            background: 'rgba(255, 255, 255, 0.85)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            borderBottom: '1px solid rgba(0,0,0,0.05)',
+            ...glass,
+            borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
+            transition: 'border-color 0.3s ease',
             zIndex: 999,
-            fontFamily: font.sans
+            fontFamily: font.sans,
         }}>
-            <div style={{
-                maxWidth: 1200, margin: '0 auto', padding: '16px 24px',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+            <div className="nav-shell" style={{
+                maxWidth: 1200, margin: '0 auto', padding: '0 24px',
+                height: 64, display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
-                <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: 'none' }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 8, background: C.primary, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {/* Logo */}
+                <Link to="/" className="brand-link" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: 'none' }}>
+                    <div style={{
+                        width: 34, height: 34, borderRadius: 10,
+                        background: 'linear-gradient(135deg, #34D399, #059669)',
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        boxShadow: '0 4px 16px rgba(52,211,153,0.35)'
+                    }}>
                         <FileText size={16} color="#fff" />
                     </div>
-                    <span style={{ fontFamily: font.serif, fontSize: 20, color: C.primary }}>Taxed</span>
+                    <span className="brand-name" style={{ fontFamily: font.serif, fontSize: 20, color: '#fff', letterSpacing: '-0.01em' }}>Taxed</span>
                 </Link>
 
                 {/* Desktop Nav */}
-                <div style={{ display: 'none', gap: 32, alignItems: 'center' }} className="nav-desktop">
+                <div style={{ display: 'none', gap: 8, alignItems: 'center' }} className="nav-desktop">
                     {links.map(l => (
                         <Link key={l.path} to={l.path} style={{
-                            fontSize: 15, fontWeight: 500, color: location.pathname === l.path ? C.primary : C.textSec,
-                            textDecoration: 'none', transition: 'color 0.2s'
-                        }}>
+                            fontSize: 14, fontWeight: 500,
+                            color: isActive(l.path) ? '#34D399' : 'rgba(255,255,255,0.65)',
+                            textDecoration: 'none', padding: '8px 14px', borderRadius: 10,
+                            transition: 'all 0.2s',
+                            background: isActive(l.path) ? 'rgba(52,211,153,0.1)' : 'transparent',
+                        }}
+                            onMouseEnter={e => { if (!isActive(l.path)) e.currentTarget.style.color = '#fff'; }}
+                            onMouseLeave={e => { if (!isActive(l.path)) e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; }}
+                        >
                             {l.name}
                         </Link>
                     ))}
                     <Link to="/calculator" style={{
-                        padding: "10px 20px", borderRadius: 99, background: C.primary, color: "#fff",
-                        fontSize: 14, fontWeight: 700, textDecoration: 'none', boxShadow: `0 4px 12px ${C.primary}40`,
-                        transition: 'transform 0.2s', display: 'inline-block'
-                    }}>
+                        marginLeft: 8,
+                        padding: "10px 20px", borderRadius: 99,
+                        background: '#34D399', color: "#000",
+                        fontSize: 13, fontWeight: 700, textDecoration: 'none',
+                        boxShadow: '0 4px 20px rgba(52,211,153,0.35)',
+                        transition: 'all 0.2s', display: 'inline-block', whiteSpace: 'nowrap'
+                    }}
+                        onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 28px rgba(52,211,153,0.5)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 20px rgba(52,211,153,0.35)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                    >
                         Get Full Access — $29.99
                     </Link>
                 </div>
 
-                {/* Mobile Nav Toggle */}
-                <button onClick={() => setIsOpen(!isOpen)} className="nav-mobile-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.text }}>
-                    {isOpen ? <X size={24} /> : <Menu size={24} />}
+                {/* Mobile toggle */}
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="nav-mobile-btn"
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '8px', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                    {isOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
             </div>
 
-            {/* Mobile Nav Menu */}
-            {isOpen && (
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-                    style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', borderBottom: '1px solid #eee', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    {links.map(l => (
-                        <Link key={l.path} to={l.path} onClick={() => setIsOpen(false)} style={{ fontSize: 16, fontWeight: 600, color: C.text, textDecoration: 'none' }}>
-                            {l.name}
+            {/* Mobile drawer */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ duration: 0.2 }}
+                        style={{
+                            position: 'absolute', top: '100%', left: 0, right: 0,
+                            ...glass,
+                            borderBottom: '1px solid rgba(255,255,255,0.08)',
+                            padding: '16px 24px 24px',
+                            display: 'flex', flexDirection: 'column', gap: 4
+                        }}
+                    >
+                        {links.map(l => (
+                            <Link key={l.path} to={l.path} onClick={() => setIsOpen(false)} style={{
+                                fontSize: 16, fontWeight: 600,
+                                color: isActive(l.path) ? '#34D399' : 'rgba(255,255,255,0.8)',
+                                textDecoration: 'none', padding: '14px 16px', borderRadius: 12,
+                                background: isActive(l.path) ? 'rgba(52,211,153,0.08)' : 'transparent',
+                            }}>
+                                {l.name}
+                            </Link>
+                        ))}
+                        <Link to="/calculator" onClick={() => setIsOpen(false)} style={{
+                            marginTop: 8, padding: "16px", borderRadius: 14,
+                            background: '#34D399', color: "#000",
+                            textAlign: 'center', fontSize: 15, fontWeight: 700, textDecoration: 'none',
+                            boxShadow: '0 4px 20px rgba(52,211,153,0.35)'
+                        }}>
+                            Get Full Access — $29.99
                         </Link>
-                    ))}
-                    <Link to="/calculator" onClick={() => setIsOpen(false)} style={{
-                        padding: "14px", borderRadius: 12, background: C.primary, color: "#fff", textAlign: 'center',
-                        fontSize: 15, fontWeight: 700, textDecoration: 'none', marginTop: 8
-                    }}>
-                        Get Full Access — $29.99
-                    </Link>
-                </motion.div>
-            )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <style>{`
-        @media (min-width: 768px) {
+        @media (min-width: 900px) {
           .nav-desktop { display: flex !important; }
           .nav-mobile-btn { display: none !important; }
+        }
+
+        @media (max-width: 899px) {
+          .nav-shell { padding: 0 16px !important; }
+          .brand-link { gap: 8px !important; }
+          .brand-name { font-size: 19px !important; }
         }
       `}</style>
         </nav>
