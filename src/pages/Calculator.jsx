@@ -185,21 +185,21 @@ const STATES = [
    REUSABLE COMPONENTS
    ═══════════════════════════════════════════ */
 function Sect({ children }) {
-  return (<div style={{ display: "flex", alignItems: "center", gap: 14, margin: "40px 0 18px", whiteSpace: "nowrap" }}><span style={{ fontFamily: font.sans, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.muted }}>{children}</span><div style={{ flex: 1, height: 1, background: C.border }} /></div>);
+  return (<div style={{ display: "flex", alignItems: "center", gap: 14, margin: "52px 0 20px", whiteSpace: "nowrap" }}><span style={{ fontFamily: font.sans, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.muted }}>{children}</span><div style={{ flex: 1, height: 1, background: C.border }} /></div>);
 }
 
 function KPI({ label, value, color, desc, icon: Icon, delay = 0, children, onClick }) {
   return (
     <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.35 }} onClick={onClick}
-      style={{ background: C.surface, borderRadius: 14, padding: "22px 24px", border: `1px solid ${C.border}`, boxShadow: shadow.card, position: "relative", overflow: "hidden", cursor: onClick ? "pointer" : "default" }}
+      style={{ background: C.surface, borderRadius: 18, padding: "28px 28px", border: `1px solid ${C.border}`, boxShadow: shadow.card, position: "relative", overflow: "hidden", cursor: onClick ? "pointer" : "default" }}
       whileHover={onClick ? { boxShadow: shadow.md } : undefined}>
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: color || C.primary, opacity: 0.7 }} />
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
         {Icon && <Icon size={15} color={C.muted} />}
         <span style={{ fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: "0.08em", textTransform: "uppercase" }}>{label}</span>
       </div>
-      <div style={{ fontFamily: font.serif, fontSize: 30, color: color || C.primary, lineHeight: 1.1 }}>{value}</div>
-      {desc && <div style={{ marginTop: 8, fontSize: 13, color: C.textSec, lineHeight: 1.5 }}>{desc}</div>}
+      <div style={{ fontFamily: font.serif, fontSize: 34, color: color || C.primary, lineHeight: 1.1 }}>{value}</div>
+      {desc && <div style={{ marginTop: 10, fontSize: 14, color: C.textSec, lineHeight: 1.55 }}>{desc}</div>}
       {children}
     </motion.div>
   );
@@ -207,12 +207,12 @@ function KPI({ label, value, color, desc, icon: Icon, delay = 0, children, onCli
 
 function Bar({ label, amount, amtColor, pct, color, delay = 0 }) {
   return (
-    <div style={{ marginBottom: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 5, fontSize: 14, gap: 8 }}>
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 7, fontSize: 15, gap: 8 }}>
         <span style={{ color: C.text }}>{label}</span>
-        <span style={{ fontFamily: font.mono, fontWeight: 600, color: amtColor || C.primary, whiteSpace: "nowrap", fontSize: 13 }}>{amount}</span>
+        <span style={{ fontFamily: font.mono, fontWeight: 600, color: amtColor || C.primary, whiteSpace: "nowrap", fontSize: 14 }}>{amount}</span>
       </div>
-      <div style={{ height: 8, background: C.border, borderRadius: 99, overflow: "hidden" }}>
+      <div style={{ height: 12, background: C.border, borderRadius: 99, overflow: "hidden" }}>
         <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.8, delay, ease: [0.25, 0.1, 0.25, 1] }}
           style={{ height: "100%", width: `${Math.min(100, Math.max(0.4, pct))}%`, background: color, borderRadius: 99, transformOrigin: "left" }} />
       </div>
@@ -244,7 +244,7 @@ function SCard({ icon, name, value, vColor, desc, badge, bColor, delay = 0 }) {
   const bs = { green: { bg: `${C.success}10`, c: C.success, bd: `${C.success}25` }, amber: { bg: `${C.warning}10`, c: C.accentDark, bd: `${C.warning}25` }, blue: { bg: `${C.info}10`, c: C.info, bd: `${C.info}25` }, red: { bg: `${C.danger}10`, c: C.danger, bd: `${C.danger}25` }, gray: { bg: `${C.muted}12`, c: C.muted, bd: `${C.muted}25` }, purple: { bg: "#8B5CF610", c: "#8B5CF6", bd: "#8B5CF625" } }[bColor] || { bg: `${C.success}10`, c: C.success, bd: `${C.success}25` };
   return (
     <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.35 }}
-      style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "20px 22px", boxShadow: shadow.sm, transition: "transform 0.2s, box-shadow 0.2s" }}
+      style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 18, padding: "24px 24px", boxShadow: shadow.sm, transition: "transform 0.2s, box-shadow 0.2s" }}
       whileHover={{ y: -3, boxShadow: shadow.md }}>
       <div style={{ fontSize: 26, marginBottom: 10 }}>{icon}</div>
       <div style={{ fontFamily: font.serif, fontSize: 16, color: C.text, marginBottom: 3 }}>{name}</div>
@@ -262,8 +262,8 @@ function FStep({ n, title, desc }) {
 function QA({ q, children, open: defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, overflow: "hidden", boxShadow: shadow.sm }}>
-      <button onClick={() => setOpen(!open)} style={{ width: "100%", padding: "18px 22px", fontSize: 15, fontWeight: 600, color: C.text, background: "none", border: "none", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, textAlign: "left", fontFamily: font.sans }}>
+    <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 18, overflow: "hidden", boxShadow: shadow.sm }}>
+      <button onClick={() => setOpen(!open)} style={{ width: "100%", padding: "20px 24px", fontSize: 16, fontWeight: 600, color: C.text, background: "none", border: "none", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, textAlign: "left", fontFamily: font.sans }}>
         {q}<motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}><ChevronDown size={18} color={C.primary} /></motion.div>
       </button>
       <AnimatePresence>
@@ -399,19 +399,19 @@ function Onboarding({ onDone }) {
                 <div style={{ position: "relative", height: 10, background: C.border, borderRadius: 99, marginBottom: 12 }}>
                   <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${((income - 15000) / (500000 - 15000)) * 100}%`, background: `linear-gradient(90deg, ${C.primary}, ${C.primaryLight})`, borderRadius: 99, transition: "width 0.02s" }} />
                   <input type="range" min={15000} max={500000} step={500} value={income} onChange={e => setIncome(+e.target.value)} aria-label="Gross annual income"
-                    style={{ position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", width: "100%", height: 20, WebkitAppearance: "none", appearance: "none", background: "transparent", outline: "none", cursor: "pointer", margin: 0 }} />
+                    style={{ position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", width: "100%", height: 32, WebkitAppearance: "none", appearance: "none", background: "transparent", outline: "none", cursor: "pointer", margin: 0 }} />
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.muted, fontWeight: 500 }}><span>$15K</span><span>$100K</span><span>$250K</span><span>$500K</span></div>
                 <div style={{ display: "flex", gap: 8, marginTop: 28 }}>
                   {["w2", "1099", "mixed"].map(t => (
-                    <button key={t} onClick={() => setIncomeType(t)} style={{ flex: 1, padding: "10px 0", borderRadius: 10, border: `2px solid ${incomeType === t ? C.primary : C.border}`, background: incomeType === t ? `${C.primary}08` : "transparent", cursor: "pointer", fontSize: 14, fontWeight: 600, fontFamily: font.sans, color: incomeType === t ? C.primary : C.textSec, transition: "all 0.15s" }}>
+                    <button key={t} onClick={() => setIncomeType(t)} style={{ flex: 1, padding: "14px 0", borderRadius: 12, border: `2px solid ${incomeType === t ? C.primary : C.border}`, background: incomeType === t ? `${C.primary}08` : "transparent", cursor: "pointer", fontSize: 15, fontWeight: 700, fontFamily: font.sans, color: incomeType === t ? C.primary : C.textSec, transition: "all 0.15s" }}>
                       {t === "w2" ? "W-2" : t === "1099" ? "1099" : "Both"}
                     </button>
                   ))}
                 </div>
                 <div style={{ marginTop: 28 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: C.textSec, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>State</div>
-                  <select value={stateCode} onChange={e => setStateCode(e.target.value)} style={{ width: "100%", padding: "14px 16px", borderRadius: 12, border: `1px solid ${C.border}`, fontSize: 16, fontFamily: font.sans, color: C.text, background: "rgba(255,255,255,0.08)", outline: "none", cursor: "pointer" }}>
+                  <select value={stateCode} onChange={e => setStateCode(e.target.value)} style={{ width: "100%", padding: "16px 18px", borderRadius: 14, border: `1px solid ${C.border}`, fontSize: 17, fontFamily: font.sans, color: C.text, background: "rgba(255,255,255,0.08)", outline: "none", cursor: "pointer" }}>
                     {STATES.map(s => <option key={s.val} value={s.val}>{s.label}</option>)}
                   </select>
                 </div>
@@ -422,7 +422,7 @@ function Onboarding({ onDone }) {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: 10 }}>
                   {FILING.map(f => {
                     const Icon = f.icon; const sel = status === f.value; return (
-                      <button key={f.value} onClick={() => setStatus(f.value)} style={{ padding: "18px 16px", borderRadius: 14, border: `2px solid ${sel ? C.primary : C.border}`, background: sel ? `${C.primary}08` : C.surface, cursor: "pointer", textAlign: "left", transition: "all 0.15s" }}>
+                      <button key={f.value} onClick={() => setStatus(f.value)} style={{ padding: "20px 18px", borderRadius: 16, border: `2px solid ${sel ? C.primary : C.border}`, background: sel ? `${C.primary}08` : C.surface, cursor: "pointer", textAlign: "left", transition: "all 0.15s" }}>
                         <Icon size={22} color={sel ? C.primary : C.muted} style={{ marginBottom: 8 }} />
                         <div style={{ fontSize: 14, fontWeight: 700, color: C.text, fontFamily: font.sans }}>{f.label}</div>
                         <div style={{ fontSize: 12, color: C.textSec, marginTop: 3 }}>{f.sub}</div>
@@ -433,9 +433,9 @@ function Onboarding({ onDone }) {
                 <div style={{ marginTop: 24, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div><div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>Dependents</div><div style={{ fontSize: 12, color: C.textSec }}>Children or qualifying relatives</div></div>
                   <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <button onClick={() => setDeps(Math.max(0, deps - 1))} style={{ width: 36, height: 36, borderRadius: 10, border: `1px solid ${C.border}`, background: C.surface, cursor: "pointer", fontSize: 20, color: C.textSec, fontFamily: font.sans }}>−</button>
+                    <button onClick={() => setDeps(Math.max(0, deps - 1))} style={{ width: 44, height: 44, borderRadius: 12, border: `1px solid ${C.border}`, background: C.surface, cursor: "pointer", fontSize: 24, color: C.textSec, fontFamily: font.sans }}>−</button>
                     <span style={{ fontFamily: font.mono, fontSize: 22, fontWeight: 700, color: C.text, minWidth: 28, textAlign: "center" }}>{deps}</span>
-                    <button onClick={() => setDeps(Math.min(10, deps + 1))} style={{ width: 36, height: 36, borderRadius: 10, border: `1px solid ${C.border}`, background: C.surface, cursor: "pointer", fontSize: 20, color: C.textSec, fontFamily: font.sans }}>+</button>
+                    <button onClick={() => setDeps(Math.min(10, deps + 1))} style={{ width: 44, height: 44, borderRadius: 12, border: `1px solid ${C.border}`, background: C.surface, cursor: "pointer", fontSize: 24, color: C.textSec, fontFamily: font.sans }}>+</button>
                   </div>
                 </div>
               </motion.div>
@@ -448,8 +448,8 @@ function Onboarding({ onDone }) {
                   { label: "I have a retirement account (401k/IRA)", sub: "Contributions may reduce your taxable income", state: hasRetirement, set: setHasRetirement, color: C.success },
                   { label: "I have a high-deductible health plan", sub: "You may qualify for HSA tax savings", state: hasHDHP, set: setHasHDHP, color: C.warning },
                 ].map((item, i) => (
-                  <label key={i} style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "16px 18px", borderRadius: 14, border: `2px solid ${item.state ? item.color + "40" : C.border}`, background: item.state ? item.color + "06" : "transparent", cursor: "pointer", marginBottom: 10, transition: "all 0.15s" }}>
-                    <input type="checkbox" checked={item.state} onChange={e => item.set(e.target.checked)} style={{ width: 20, height: 20, marginTop: 2, accentColor: item.color, flexShrink: 0 }} />
+                  <label key={i} style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "18px 20px", borderRadius: 16, border: `2px solid ${item.state ? item.color + "40" : C.border}`, background: item.state ? item.color + "06" : "transparent", cursor: "pointer", marginBottom: 12, transition: "all 0.15s" }}>
+                    <input type="checkbox" checked={item.state} onChange={e => item.set(e.target.checked)} style={{ width: 24, height: 24, marginTop: 2, accentColor: item.color, flexShrink: 0 }} />
                     <div><div style={{ fontSize: 15, fontWeight: 600, color: C.text }}>{item.label}</div><div style={{ fontSize: 13, color: C.textSec, marginTop: 2 }}>{item.sub}</div></div>
                   </label>
                 ))}
@@ -458,9 +458,9 @@ function Onboarding({ onDone }) {
           </AnimatePresence>
 
           <div style={{ display: "flex", justifyContent: "space-between", marginTop: 36, gap: 12 }}>
-            {step > 0 ? (<button onClick={() => setStep(step - 1)} style={{ padding: "12px 24px", borderRadius: 12, border: `1px solid ${C.border}`, background: C.surface, cursor: "pointer", fontSize: 14, fontWeight: 600, color: C.textSec, fontFamily: font.sans, display: "flex", alignItems: "center", gap: 6 }}><ArrowLeft size={16} /> Back</button>) : <div />}
+            {step > 0 ? (<button onClick={() => setStep(step - 1)} style={{ padding: "14px 26px", borderRadius: 14, border: `1px solid ${C.border}`, background: C.surface, cursor: "pointer", fontSize: 15, fontWeight: 700, color: C.textSec, fontFamily: font.sans, display: "flex", alignItems: "center", gap: 8 }}><ArrowLeft size={16} /> Back</button>) : <div />}
             <button onClick={() => step < 2 ? setStep(step + 1) : onDone({ income, status, deps, incomeType, stateCode, hasPenalty, hasStudentLoans, hasRetirement, hasHDHP })}
-              style={{ padding: "12px 28px", borderRadius: 12, border: "none", background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLight})`, color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 700, fontFamily: font.sans, display: "flex", alignItems: "center", gap: 8, boxShadow: `0 4px 16px ${C.primary}40` }}>
+              style={{ padding: "14px 30px", borderRadius: 14, border: "none", background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLight})`, color: "#fff", cursor: "pointer", fontSize: 15, fontWeight: 700, fontFamily: font.sans, display: "flex", alignItems: "center", gap: 8, boxShadow: `0 4px 16px ${C.primary}40` }}>
               {step < 2 ? <>Continue <ArrowRight size={16} /></> : <>See My Breakdown <Sparkles size={16} /></>}
             </button>
           </div>
@@ -528,7 +528,7 @@ export default function TaxedApp() {
               <div style={{ width: 34, height: 34, borderRadius: 9, background: "linear-gradient(135deg, #34D399, #059669)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(52,211,153,0.35)" }}><FileText size={16} color="#fff" /></div>
               <span style={{ fontFamily: font.serif, fontSize: 19, color: C.primary }}>{BRAND.name}</span>
             </div>
-            <button onClick={generatePDF} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 16px", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 99, fontSize: 13, fontWeight: 700, color: C.text, cursor: "pointer", boxShadow: shadow.sm, transition: "all 0.2s" }} onMouseOver={e => e.currentTarget.style.boxShadow = shadow.md} onMouseOut={e => e.currentTarget.style.boxShadow = shadow.sm}>
+            <button onClick={generatePDF} style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 18px", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 99, fontSize: 14, fontWeight: 700, color: C.text, cursor: "pointer", boxShadow: shadow.sm, transition: "all 0.2s" }} onMouseOver={e => e.currentTarget.style.boxShadow = shadow.md} onMouseOut={e => e.currentTarget.style.boxShadow = shadow.sm}>
               <Download size={14} /> Export PDF for CPA
             </button>
           </div>
@@ -546,13 +546,13 @@ export default function TaxedApp() {
         </motion.div>
 
         <Sect>Income & Tax at a Glance</Sect>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: 18 }}>
           <KPI label="Gross Income" value={fmt(income)} color={C.info} desc="Drag the slider to explore" icon={DollarSign}>
             <div style={{ marginTop: 16, position: "relative" }}>
-              <div style={{ position: "relative", height: 8, background: C.border, borderRadius: 99 }}>
+              <div style={{ position: "relative", height: 12, background: C.border, borderRadius: 99 }}>
                 <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${sldPct}%`, background: `linear-gradient(90deg, ${C.info}, ${C.primary})`, borderRadius: 99, transition: "width 0.02s" }} />
                 <input type="range" min={15000} max={500000} step={500} value={income} onChange={e => setIncome(+e.target.value)} aria-label="Income"
-                  style={{ position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", width: "100%", height: 20, WebkitAppearance: "none", appearance: "none", background: "transparent", outline: "none", cursor: "pointer", margin: 0 }} />
+                  style={{ position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", width: "100%", height: 32, WebkitAppearance: "none", appearance: "none", background: "transparent", outline: "none", cursor: "pointer", margin: 0 }} />
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 11, color: C.muted, fontWeight: 500 }}><span>$15K</span><span>$150K</span><span>$500K</span></div>
             </div>
