@@ -20,16 +20,16 @@ export default function Footer() {
                         <div style={{ width: 32, height: 32, borderRadius: 8, background: C.primary, display: "flex", alignItems: "center", justifyContent: "center" }}>
                             <FileText size={16} color="#fff" />
                         </div>
-                        <span style={{ fontFamily: font.serif, fontSize: 20, color: C.primary }}>ClearFile</span>
+                        <span style={{ fontFamily: font.serif, fontSize: 20, color: C.primary }}>Taxed</span>
                     </Link>
                     <p style={{ color: C.textSec, fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
-                        Your taxes, explained — not just filed.<br />
+                        Finally see where your money goes.<br />
                         Educational purpose tax tools and world-class insights.
                     </p>
                     <div style={{ display: 'flex', gap: 12 }}>
-                        <a href="#" style={{ color: C.textSec }}><Twitter size={20} /></a>
-                        <a href="#" style={{ color: C.textSec }}><Github size={20} /></a>
-                        <a href="#" style={{ color: C.textSec }}><Mail size={20} /></a>
+                        <a href="https://x.com/taxedhq" target="_blank" rel="noreferrer" style={{ color: C.textSec }}><Twitter size={20} /></a>
+                        <a href="https://github.com/omarranti" target="_blank" rel="noreferrer" style={{ color: C.textSec }}><Github size={20} /></a>
+                        <a href="mailto:help@taxedhq.com" style={{ color: C.textSec }}><Mail size={20} /></a>
                     </div>
                 </div>
 
@@ -62,7 +62,7 @@ export default function Footer() {
             </div>
 
             <div style={{ maxWidth: 1200, margin: '40px auto 0', paddingTop: 24, borderTop: `1px solid ${C.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, fontSize: 13, color: C.textSec }}>
-                <span>© {new Date().getFullYear()} ClearFile. Not actual tax advice.</span>
+                <span>&copy; {new Date().getFullYear()} Taxed. Not actual tax advice.</span>
                 <div style={{ display: 'flex', gap: 24 }}>
                     <Link to="/privacy" style={{ textDecoration: 'none', color: C.textSec }}>Privacy Policy</Link>
                     <Link to="/terms" style={{ textDecoration: 'none', color: C.textSec }}>Terms of Service</Link>

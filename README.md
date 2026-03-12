@@ -1,16 +1,29 @@
-# React + Vite
+# Taxed — Finally See Where Your Money Goes
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A visual tax clarity platform for California taxpayers. Model tax scenarios, discover hidden credits, and identify risks across any income level.
 
-Currently, two official plugins are available:
+**Not a tax filing service.** Taxed is an educational tool.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Stack
+- React 19 + Vite
+- Framer Motion
+- Lucide React icons
+- Claude AI chatbot
+- html2canvas + jsPDF for PDF export
 
-## React Compiler
+## Run locally
+```bash
+npm install
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Deploy
+```bash
+npm run build
+npm run deploy  # deploys to GitHub Pages
+```
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Links
+- **Website:** [taxed.tax](https://taxed.tax)
+- **Social:** [@taxedhq](https://x.com/taxedhq)
+- **Support:** help@taxedhq.com

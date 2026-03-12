@@ -11,19 +11,15 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 
 /* ═══════════════════════════════════════════
-   BRAND CONFIG (Section 2.1)
+   BRAND CONFIG
    ═══════════════════════════════════════════ */
-const BRAND = { name: "ClearFile", tagline: "Your taxes, explained — not just filed." };
+const BRAND = { name: "Taxed", tagline: "Finally see where your money goes." };
 const DISCLAIMER = "This tool provides tax estimates for educational purposes only. It is not tax advice. Consult a qualified tax professional for your situation.";
 
 /* ═══════════════════════════════════════════
-   TAX ENGINE — Pure functions (Section 4)
+   TAX ENGINE — Pure functions
    ═══════════════════════════════════════════ */
 const FED_STD = { single: 14600, married_joint: 29200, married_separate: 14600, head_of_household: 21900 };
-
-// We will use California's brackets as the proxy "State Tax" for all states for the MVP, 
-// but we will update the UI labels to reflect the top 10 state chosen by the user.
-// (In a full app, we would add the 9 other bracket tables here).
 const CA_STD = { single: 5202, married_joint: 10404, married_separate: 5202, head_of_household: 10404 };
 
 const FED_BRACKETS = {
@@ -153,7 +149,6 @@ function calcPenalty(taxOwed, monthsLate, hasClean3Yr) {
 
 function fullCalc(income, status = "single", deps = 0, hasPenalty = false, monthsLate = 5, hasClean3Yr = true, state = "CA") {
   const fed = calcFederal(income, status);
-  // Using CA as the proxy calculation for now to keep the code footprint manageable
   const st = calcCA(income, status);
   const totalTax = fed.totalTax + st.totalTax;
   const eitc = calcEITC(income, deps, status);
@@ -163,16 +158,11 @@ function fullCalc(income, status = "single", deps = 0, hasPenalty = false, month
   return { income, filingStatus: status, dependents: deps, state, fed, st, combined: { totalTax, effectiveRate: income > 0 ? totalTax / income : 0, takeHome: income - totalTax, monthlyTakeHome: Math.round((income - totalTax) / 12) }, eitc, calEitc, savers, penalty };
 }
 
-/* ═══════════════════════════════════════════
-   FORMATTERS
-   ═══════════════════════════════════════════ */
+/* ═══════════════════════════════════════════ */
 const fmt = (n) => "$" + Math.round(n).toLocaleString();
 const fmtP = (r) => (r * 100).toFixed(1) + "%";
 const short = (n) => n >= 1000 ? "$" + Math.round(n / 1000) + "K" : fmt(n);
 
-/* ═══════════════════════════════════════════
-   DESIGN TOKENS (Section 2.3)
-   ═══════════════════════════════════════════ */
 const C = { primary: "#1B4D3E", primaryLight: "#2D7A5F", primaryDark: "#0F2E25", accent: "#F59E0B", accentLight: "#FCD34D", accentDark: "#D97706", success: "#10B981", warning: "#F59E0B", danger: "#EF4444", info: "#3B82F6", bg: "#FAFAF8", surface: "#FFFFFF", border: "#E5E5E0", text: "#1A1A1A", textSec: "#6B6B6B", muted: "#9CA3AF" };
 const font = { serif: "'DM Serif Display', Georgia, serif", sans: "'DM Sans', system-ui, sans-serif", mono: "'JetBrains Mono', monospace" };
 const shadow = { sm: "0 1px 2px rgba(0,0,0,0.05)", md: "0 4px 12px rgba(0,0,0,0.08)", card: "0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03)" };
@@ -185,17 +175,10 @@ const FILING = [
 ];
 
 const STATES = [
-  { val: "CA", label: "California" },
-  { val: "TX", label: "Texas" },
-  { val: "FL", label: "Florida" },
-  { val: "NY", label: "New York" },
-  { val: "PA", label: "Pennsylvania" },
-  { val: "IL", label: "Illinois" },
-  { val: "OH", label: "Ohio" },
-  { val: "GA", label: "Georgia" },
-  { val: "NC", label: "North Carolina" },
-  { val: "MI", label: "Michigan" },
-  { val: "OTHER", label: "Other" }
+  { val: "CA", label: "California" }, { val: "TX", label: "Texas" }, { val: "FL", label: "Florida" },
+  { val: "NY", label: "New York" }, { val: "PA", label: "Pennsylvania" }, { val: "IL", label: "Illinois" },
+  { val: "OH", label: "Ohio" }, { val: "GA", label: "Georgia" }, { val: "NC", label: "North Carolina" },
+  { val: "MI", label: "Michigan" }, { val: "OTHER", label: "Other" }
 ];
 
 /* ═══════════════════════════════════════════
@@ -291,7 +274,7 @@ function QA({ q, children, open: defaultOpen = false }) {
 }
 
 /* ═══════════════════════════════════════════
-   AI CHATBOT (Section 5.3)
+   AI CHATBOT
    ═══════════════════════════════════════════ */
 function Chat({ result, isOpen, onClose }) {
   const [msgs, setMsgs] = useState([]);
@@ -372,7 +355,7 @@ RULES:
 }
 
 /* ═══════════════════════════════════════════
-   ONBOARDING FLOW (Section 5.1)
+   ONBOARDING FLOW
    ═══════════════════════════════════════════ */
 function Onboarding({ onDone }) {
   const [step, setStep] = useState(0);
@@ -491,7 +474,7 @@ function Onboarding({ onDone }) {
 /* ═══════════════════════════════════════════
    MAIN APP
    ═══════════════════════════════════════════ */
-export default function ClearFile() {
+export default function TaxedApp() {
   const [boarded, setBoarded] = useState(false);
   const [income, setIncome] = useState(50000);
   const [status, setStatus] = useState("single");
@@ -524,7 +507,7 @@ export default function ClearFile() {
     const pdfW = pdf.internal.pageSize.getWidth();
     const pdfH = (canvas.height * pdfW) / canvas.width;
     pdf.addImage(imgData, "JPEG", 0, 0, pdfW, pdfH);
-    pdf.save(`ClearFile_Report_${stateCode}.pdf`);
+    pdf.save(`Taxed_Report_${stateCode}.pdf`);
   };
 
   const actionItems = [
@@ -539,7 +522,6 @@ export default function ClearFile() {
       <div style={{ position: "fixed", inset: 0, backgroundImage: `linear-gradient(${C.primary}06 1px, transparent 1px), linear-gradient(90deg, ${C.primary}06 1px, transparent 1px)`, backgroundSize: "52px 52px", pointerEvents: "none", zIndex: 0 }} />
 
       <div ref={reportRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 20px", position: "relative", zIndex: 1 }}>
-        {/* Header */}
         <motion.div initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 10 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -555,16 +537,14 @@ export default function ClearFile() {
           <p style={{ color: C.textSec, fontSize: 15, lineHeight: 1.6 }}>Drag the slider — every number updates instantly</p>
         </motion.div>
 
-        {/* Navigation Notice */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{ background: `${C.info}10`, border: `1px solid ${C.info}25`, borderRadius: 14, padding: "18px 22px", display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 36 }}>
           <div style={{ width: 34, height: 34, borderRadius: "50%", background: `${C.info}15`, color: C.info, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Shield size={16} /></div>
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 4 }}>Educational Context Only</div>
-            <div style={{ fontSize: 13, color: C.textSec, lineHeight: 1.5 }}>ClearFile is a tool for exploring strategies, identifying risks, and modeling scenarios. This is not a filing service or official tax advice.</div>
+            <div style={{ fontSize: 13, color: C.textSec, lineHeight: 1.5 }}>Taxed is a tool for exploring strategies, identifying risks, and modeling scenarios. This is not a filing service or official tax advice.</div>
           </div>
         </motion.div>
 
-        {/* KPI Cards */}
         <Sect>Income & Tax at a Glance</Sect>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: 14 }}>
           <KPI label="Gross Income" value={fmt(income)} color={C.info} desc="Drag the slider to explore" icon={DollarSign}>
@@ -614,7 +594,6 @@ export default function ClearFile() {
           </KPI>
         </div>
 
-        {/* Bar Chart */}
         <Sect>Where Your Money Goes</Sect>
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}
           style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: "24px 28px", boxShadow: shadow.card, position: "relative", overflow: "hidden" }}>
@@ -629,7 +608,6 @@ export default function ClearFile() {
 
         <div style={{ height: 1, background: C.border, margin: "44px 0" }} />
 
-        {/* Penalty + FTA */}
         {hasPenalty && r.penalty && (<>
           <Sect>Late Filing Penalty & How to Fix It</Sect>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 14 }}>
@@ -667,7 +645,6 @@ export default function ClearFile() {
           <div style={{ height: 1, background: C.border, margin: "44px 0" }} />
         </>)}
 
-        {/* Savings Banner */}
         <Sect>Potential Savings</Sect>
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           style={{ background: `linear-gradient(135deg, ${C.primary}06, ${C.info}06)`, border: `1px solid ${C.primary}15`, borderRadius: 16, padding: "22px 26px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 18, marginBottom: 20 }}>
@@ -679,26 +656,20 @@ export default function ClearFile() {
           </div>
         </motion.div>
 
-        {/* Savings Grid */}
         <Sect>Savings & Credits — All Options</Sect>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 265px), 1fr))", gap: 14 }}>
-          <SCard icon="🏛️" name="Federal EITC" delay={0.05} value={r.eitc.eligible ? `Up to ${fmt(r.eitc.amount)}` : `Over limit at ${short(income)}`} vColor={r.eitc.eligible ? C.success : C.muted}
-            desc={r.eitc.eligible ? `At ${short(income)} you may qualify for ${fmt(r.eitc.amount)}. It's refundable.` : `At ${short(income)} (${deps === 0 ? "no kids" : deps + " kid" + (deps > 1 ? "s" : "")}) you're above the cutoff.`}
-            badge={r.eitc.eligible ? "Refundable" : "Over Limit"} bColor={r.eitc.eligible ? "green" : "gray"} />
+          <SCard icon="🏛️" name="Federal EITC" delay={0.05} value={r.eitc.eligible ? `Up to ${fmt(r.eitc.amount)}` : `Over limit at ${short(income)}`} vColor={r.eitc.eligible ? C.success : C.muted} desc={r.eitc.eligible ? `At ${short(income)} you may qualify for ${fmt(r.eitc.amount)}. It's refundable.` : `At ${short(income)} (${deps === 0 ? "no kids" : deps + " kid" + (deps > 1 ? "s" : "")}) you're above the cutoff.`} badge={r.eitc.eligible ? "Refundable" : "Over Limit"} bColor={r.eitc.eligible ? "green" : "gray"} />
           {hasPenalty && <SCard icon="⚠️" name="FTA Penalty Waiver" delay={0.08} value={r.penalty ? fmt(r.penalty.ftaSavings) + " saved" : "$0"} vColor={C.danger} desc="First-Time Abatement removes your penalty. Clean 3-year history required." badge="One-Time Use" bColor="green" />}
           <SCard icon="📦" name="Traditional IRA" delay={0.11} value="Up to $7,000/yr" vColor={C.info} desc={`A $5K IRA at ${short(income)} saves ≈${fmt(iraSave)} federal tax. Deadline: April 15.`} badge="Pre-Tax" bColor="blue" />
           <SCard icon="🏥" name="HSA" delay={0.14} value="Up to $4,150/yr" vColor={C.accentDark} desc={`Full HSA at ${short(income)} saves ≈${fmt(hsaSave)} federal. Requires HDHP.`} badge="Triple Tax Advantage" bColor="amber" />
           <SCard icon="🎓" name="Student Loan Interest" delay={0.17} value="Up to $2,500" vColor="#8B5CF6" desc={`Above-the-line deduction. At ${short(income)} you're under the $75K phase-out.`} badge="Above-the-Line" bColor="purple" />
-          <SCard icon="🌱" name="CA CalEITC" delay={0.2} value={r.calEitc.eligible ? `Eligible (~${fmt(r.calEitc.amount)})` : `Not eligible at ${short(income)}`} vColor={r.calEitc.eligible ? C.success : C.muted}
-            desc={r.calEitc.eligible ? "Under the $22,302 CA limit." : `CalEITC cuts off at $22,302.`} badge={r.calEitc.eligible ? "State Credit" : "Income Too High"} bColor={r.calEitc.eligible ? "green" : "gray"} />
+          <SCard icon="🌱" name="CA CalEITC" delay={0.2} value={r.calEitc.eligible ? `Eligible (~${fmt(r.calEitc.amount)})` : `Not eligible at ${short(income)}`} vColor={r.calEitc.eligible ? C.success : C.muted} desc={r.calEitc.eligible ? "Under the $22,302 CA limit." : `CalEITC cuts off at $22,302.`} badge={r.calEitc.eligible ? "State Credit" : "Income Too High"} bColor={r.calEitc.eligible ? "green" : "gray"} />
           <SCard icon="💼" name="Self-Employment Deductions" delay={0.23} value="Varies" vColor={C.info} desc="If 1099: home office, phone, software, mileage — all deductible." badge="If Self-Employed" bColor="blue" />
-          <SCard icon="📱" name="Saver's Credit" delay={0.26} value={r.savers.eligible ? `${fmtP(r.savers.rate)} credit` : "Over income limit"} vColor={r.savers.eligible ? C.accentDark : C.muted}
-            desc={r.savers.eligible ? `$2K IRA earns extra ${fmt(r.savers.maxCredit)} credit.` : `Above the $36,500 limit.`} badge={r.savers.eligible ? "Non-Refundable" : "Over Limit"} bColor={r.savers.eligible ? "amber" : "gray"} />
+          <SCard icon="📱" name="Saver's Credit" delay={0.26} value={r.savers.eligible ? `${fmtP(r.savers.rate)} credit` : "Over income limit"} vColor={r.savers.eligible ? C.accentDark : C.muted} desc={r.savers.eligible ? `$2K IRA earns extra ${fmt(r.savers.maxCredit)} credit.` : `Above the $36,500 limit.`} badge={r.savers.eligible ? "Non-Refundable" : "Over Limit"} bColor={r.savers.eligible ? "amber" : "gray"} />
         </div>
 
         <div style={{ height: 1, background: C.border, margin: "44px 0" }} />
 
-        {/* Q&A */}
         <Sect>Your Questions, Answered</Sect>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <QA q="Should I use the FTA waiver to get rid of a penalty?" open={hasPenalty}>
@@ -720,7 +691,6 @@ export default function ClearFile() {
           </QA>
         </div>
 
-        {/* Next Actions */}
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
           style={{ marginTop: 44, padding: 26, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, boxShadow: shadow.card }}>
           <div style={{ fontFamily: font.serif, fontSize: 18, color: C.text, marginBottom: 20 }}>⚡ Your Next {actionItems.length} Actions</div>
@@ -736,13 +706,11 @@ export default function ClearFile() {
           </div>
         </motion.div>
 
-        {/* Disclaimer */}
         <div style={{ marginTop: 40, padding: "14px 18px", background: `${C.primary}04`, border: `1px solid ${C.primary}10`, borderRadius: 12, fontSize: 11, color: C.muted, lineHeight: 1.7 }}>
           <strong style={{ color: C.textSec }}>Disclaimer:</strong> {DISCLAIMER}
         </div>
       </div>
 
-      {/* Chat FAB */}
       <motion.button onClick={() => setChatOpen(!chatOpen)} whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}
         style={{ position: "fixed", bottom: 22, right: 16, width: 56, height: 56, borderRadius: "50%", background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLight})`, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 4px 20px ${C.primary}40`, zIndex: 1000 }}
         aria-label={chatOpen ? "Close chat" : "Open tax assistant"}>

@@ -39,7 +39,7 @@ export default function Navbar() {
                     <div style={{ width: 32, height: 32, borderRadius: 8, background: C.primary, display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <FileText size={16} color="#fff" />
                     </div>
-                    <span style={{ fontFamily: font.serif, fontSize: 20, color: C.primary }}>ClearFile</span>
+                    <span style={{ fontFamily: font.serif, fontSize: 20, color: C.primary }}>Taxed</span>
                 </Link>
 
                 {/* Desktop Nav */}
@@ -57,7 +57,7 @@ export default function Navbar() {
                         fontSize: 14, fontWeight: 700, textDecoration: 'none', boxShadow: `0 4px 12px ${C.primary}40`,
                         transition: 'transform 0.2s', display: 'inline-block'
                     }}>
-                        Get Full Access — $19.99
+                        Get Full Access — $29.99
                     </Link>
                 </div>
 
@@ -80,12 +80,11 @@ export default function Navbar() {
                         padding: "14px", borderRadius: 12, background: C.primary, color: "#fff", textAlign: 'center',
                         fontSize: 15, fontWeight: 700, textDecoration: 'none', marginTop: 8
                     }}>
-                        Get Full Access — $19.99
+                        Get Full Access — $29.99
                     </Link>
                 </motion.div>
             )}
 
-            {/* Add CSS for media queries inline to avoid modifying main CSS unnecessarily */}
             <style>{`
         @media (min-width: 768px) {
           .nav-desktop { display: flex !important; }
