@@ -1,16 +1,8 @@
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-const PLAN_TO_PRICE = {
-  full_access: process.env.STRIPE_PRICE_FULL_MONTHLY,
-  full: process.env.STRIPE_PRICE_FULL_MONTHLY,
-  pro_ai: process.env.STRIPE_PRICE_PRO_MONTHLY,
-  pro: process.env.STRIPE_PRICE_PRO_MONTHLY,
-  monthly: process.env.STRIPE_PRICE_PRO_MONTHLY,
-};
-
-const ONE_TIME_PLANS = new Set(["full_access", "full"]);
+const MONTHLY_PRICE = process.env.STRIPE_PRICE_PRO_MONTHLY;
+const FOUNDERS_SETUP_AMOUNT = 1999;
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -22,27 +14,34 @@ export default async function handler(req, res) {
     cancel_url = `${process.env.VITE_APP_URL}/calculator?checkout=canceled`,
   } = req.body;
 
-  const priceId = PLAN_TO_PRICE[plan];
-  if (!priceId) {
-    return res.status(400).json({ error: `Unknown plan: ${plan}` });
-  }
+  if (!MONTHLY_PRICE) return res.status(500).json({ error: "Missing price config" });
 
-  const isOneTime = ONE_TIME_PLANS.has(plan);
+  const isFounders = plan === "full" || plan === "full_access" || plan === "founders";
+  const lineItems = [{ price: MONTHLY_PRICE, quantity: 1 }];
 
   try {
     const sessionParams = {
-      mode: isOneTime ? 'payment' : 'subscription',
-      line_items: [{ price: priceId, quantity: 1 }],
+      mode: 'subscription',
+      line_items: lineItems,
       success_url,
       cancel_url,
-      metadata: { plan },
+      metadata: { plan: isFounders ? "founders" : "monthly" },
       allow_promotion_codes: true,
+      subscription_data: {
+        metadata: { plan: isFounders ? "founders" : "monthly" },
+      },
     };
 
-    if (!isOneTime) {
-      sessionParams.subscription_data = {
-        metadata: { plan },
-      };
+    if (isFounders) {
+      sessionParams.subscription_data.trial_period_days = 90;
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: { name: 'Founders Club — 3-Month Access' },
+          unit_amount: FOUNDERS_SETUP_AMOUNT,
+        },
+        quantity: 1,
+      });
     }
 
     if (email) {

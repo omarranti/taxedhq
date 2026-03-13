@@ -866,7 +866,7 @@ export default function TaxedApp({ session }) {
           <div style={{ fontSize: 14, color: C.text, fontWeight: 700 }}>We found {opportunities.length} opportunities in your profile.</div>
           {!hasFullAccess && (
             <div style={{ fontSize: 12, color: C.muted }}>
-              Full diagnostic is free. Unlock everything for <strong style={{ color: C.text }}>$19.99</strong> — lifetime access.
+              Full diagnostic is free. Join the Founders Club for <strong style={{ color: C.text }}>$19.99</strong> — 3 months included.
             </div>
           )}
         </div>
@@ -1001,20 +1001,20 @@ export default function TaxedApp({ session }) {
                   <div style={{ position: "absolute", top: 0, right: 0, background: C.accent, color: "#fff", fontSize: 12, fontWeight: 800, padding: "4px 12px", borderBottomLeftRadius: 12 }}>Limited offer</div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
-                      <div style={{ fontSize: 17, fontWeight: 800, color: C.text }}>Lifetime Access</div>
-                      <div style={{ fontSize: 14, color: C.textSec, marginTop: 2 }}>First 10,000 members. One payment, forever yours.</div>
+                      <div style={{ fontSize: 17, fontWeight: 800, color: C.text }}>Founders Club</div>
+                      <div style={{ fontSize: 14, color: C.textSec, marginTop: 2 }}>$19.99 now for 3 months, then $9.99/mo</div>
                     </div>
-                    <div style={{ fontFamily: font.sans, fontWeight: 800, color: C.primary, fontSize: 28, whiteSpace: "nowrap" }}>$19.99</div>
+                    <div style={{ fontFamily: font.sans, fontWeight: 800, color: C.primary, fontSize: 28, whiteSpace: "nowrap" }}>$19.99<span style={{ fontSize: 13, color: C.muted, fontWeight: 600 }}> then $9.99/mo</span></div>
                   </div>
-                  <div style={{ marginTop: 8, fontSize: 13, color: C.accent, fontWeight: 700 }}>Offer ends April 15 — then $29.99/mo</div>
+                  <div style={{ marginTop: 8, fontSize: 13, color: C.accent, fontWeight: 700 }}>First 10,000 members only — offer ends April 15</div>
                 </button>
                 <button onClick={() => setSelectedPlan("monthly")} style={{ textAlign: "left", borderRadius: 20, border: `3px solid ${selectedPlan === "monthly" ? C.secondary : C.border}`, background: selectedPlan === "monthly" ? `${C.secondary}0C` : C.surface, padding: "18px 20px", cursor: "pointer", transition: "all 0.15s" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: C.text }}>Monthly Plan</div>
-                      <div style={{ fontSize: 14, color: C.textSec, marginTop: 2 }}>Full access, billed monthly</div>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: C.text }}>Monthly</div>
+                      <div style={{ fontSize: 14, color: C.textSec, marginTop: 2 }}>Full access, no commitment</div>
                     </div>
-                    <div style={{ fontFamily: font.sans, fontWeight: 800, color: C.secondary, fontSize: 24, whiteSpace: "nowrap" }}>$29.99<span style={{ fontSize: 14, color: C.muted, fontWeight: 600 }}>/mo</span></div>
+                    <div style={{ fontFamily: font.sans, fontWeight: 800, color: C.secondary, fontSize: 24, whiteSpace: "nowrap" }}>$9.99<span style={{ fontSize: 14, color: C.muted, fontWeight: 600 }}>/mo</span></div>
                   </div>
                 </button>
               </div>
@@ -1036,7 +1036,7 @@ export default function TaxedApp({ session }) {
               <button onClick={() => setPaywallOpen(false)} style={{ width: "100%", marginTop: 10, border: "none", background: "transparent", color: C.muted, fontSize: 15, fontWeight: 700, padding: "12px", cursor: "pointer" }}>
                 Keep exploring for free
               </button>
-              <p style={{ textAlign: "center", marginTop: 8, fontSize: 13, color: C.muted }}>Secure checkout via Stripe. Cancel monthly plan anytime.</p>
+              <p style={{ textAlign: "center", marginTop: 8, fontSize: 13, color: C.muted }}>Secure checkout via Stripe. Founders: $19.99 now, then $9.99/mo after 3 months. Cancel anytime.</p>
             </motion.div>
           </motion.div>
         )}

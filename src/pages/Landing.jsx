@@ -392,7 +392,7 @@ export default function Landing() {
 
           <div style={{ marginTop: 24, ...glass, borderRadius: 16, padding: "16px 18px" }}>
             <p style={{ margin: 0, color: "#102a43", fontWeight: 700, fontSize: "clamp(16px, 1.6vw, 20px)", lineHeight: 1.5 }}>
-              Start free. First 10,000 members get <span style={{ color: "#1f9d8b" }}>lifetime access for $19.99</span> — offer ends April 15.
+              Start free. First 10,000 members: <span style={{ color: "#1f9d8b" }}>$19.99 for 3 months</span>, then $9.99/mo. Offer ends April 15.
             </p>
           </div>
 
