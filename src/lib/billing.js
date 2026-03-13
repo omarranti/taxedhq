@@ -14,10 +14,19 @@ const api = async (path, options = {}) => {
 };
 
 export const startCheckout = async ({ plan, email, scenario }) => {
-  const data = await api("/api/create-checkout-session", {
-    method: "POST",
-    body: JSON.stringify({ plan, email, scenario }),
-  });
+  let data;
+  try {
+    data = await api("/api/create-checkout-session", {
+      method: "POST",
+      body: JSON.stringify({ plan, email, scenario }),
+    });
+  } catch {
+    const legacyPlan = plan === "pro" ? "pro_ai" : "full_access";
+    data = await api("/api/create-checkout", {
+      method: "POST",
+      body: JSON.stringify({ plan: legacyPlan, email }),
+    });
+  }
 
   if (data.url) {
     window.location.href = data.url;
@@ -38,12 +47,20 @@ export const getCheckoutStatus = async (sessionId) => api(`/api/checkout-status?
 export const claimEntitlement = async (sessionId) => {
   const { data } = await supabase.auth.getSession();
   const token = data?.session?.access_token;
+  const userId = data?.session?.user?.id;
   if (!token) throw new Error("Please log in to claim this purchase.");
-  return api("/api/claim-entitlement", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ session_id: sessionId }),
-  });
+  try {
+    return await api("/api/claim-entitlement", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ session_id: sessionId }),
+    });
+  } catch {
+    return api("/api/claim-purchase", {
+      method: "POST",
+      body: JSON.stringify({ session_id: sessionId, user_id: userId }),
+    });
+  }
 };
 
 export const loadEntitlement = async (userId) => {
@@ -53,6 +70,21 @@ export const loadEntitlement = async (userId) => {
     .select("*")
     .eq("user_id", userId)
     .maybeSingle();
-  if (error) return null;
-  return data;
+  if (!error && data) return data;
+
+  const { data: legacySub } = await supabase
+    .from("subscriptions")
+    .select("plan,status")
+    .eq("user_id", userId)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!legacySub) return null;
+  const active = ["active", "trialing", "past_due"].includes(legacySub.status || "");
+  return {
+    full_access: active,
+    pro_ai: active && legacySub.plan === "pro_ai",
+    status: active ? "active" : "inactive",
+  };
 };
