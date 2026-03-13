@@ -4,7 +4,7 @@ import {
   ChevronDown, Send, MessageCircle, X, Check,
   DollarSign, TrendingDown, FileText, GraduationCap,
   AlertTriangle, ArrowRight, ArrowLeft, Download,
-  Calculator, Phone, Briefcase, Shield, PiggyBank, Heart, CloudUpload,
+  Phone, Briefcase, Shield, PiggyBank, Heart, CloudUpload,
   ChevronRight, Sparkles, Users, Home, User, ChevronsUpDown
 } from "lucide-react";
 import html2canvas from "html2canvas";
@@ -293,119 +293,6 @@ function QA({ q, children, open: defaultOpen = false }) {
 }
 
 /* ═══════════════════════════════════════════
-   AI CHATBOT
-   ═══════════════════════════════════════════ */
-function Chat({ result, isOpen, onClose, teaser = false, onUpgrade, isPro = false, remainingFree = 0, onUse }) {
-  const [msgs, setMsgs] = useState([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const scrollRef = useRef(null);
-
-  useEffect(() => {
-    if (isOpen && msgs.length === 0) setMsgs([{ role: "assistant", content: `Hey! 👋 I'm your ${BRAND.name} assistant. I know your full tax situation at ${short(result.income)} in California.\n\nAsk me anything — your breakdown, savings, penalties, or what to do next.\n\n_${DISCLAIMER}_` }]);
-  }, [isOpen]);
-
-  useEffect(() => { scrollRef.current && (scrollRef.current.scrollTop = scrollRef.current.scrollHeight); }, [msgs, loading]);
-
-  const quickQ = ["How much do I owe?", "What can I save?", "$600 waiver?", "Explain my bracket", "Find a CPA"];
-
-  const send = useCallback(async (text) => {
-    const msg = (text || input).trim();
-    if (!msg || loading) return;
-    setInput("");
-    const userMsg = { role: "user", content: msg };
-    setMsgs(p => [...p, userMsg]);
-    setLoading(true);
-    try {
-      const sys = `You are ${BRAND.name}'s tax assistant. Warm, direct, plain English. Like a smart friend who studied tax law.
-
-USER'S TAX SITUATION:
-- Gross income: ${fmt(result.income)} | Filing: ${result.filingStatus} | State: ${STATES.find(s=>s.val===result.state)?.label || result.state}
-- Federal tax: ${fmt(result.fed.totalTax)} (eff: ${fmtP(result.fed.effectiveRate)}, marginal: ${fmtP(result.fed.marginalRate)})
-- State tax: ${fmt(result.st.totalTax)} (eff: ${fmtP(result.st.effectiveRate)})
-- Total: ${fmt(result.combined.totalTax)} | Eff rate: ${fmtP(result.combined.effectiveRate)}
-- Take-home: ${fmt(result.combined.takeHome)}/yr (${fmt(result.combined.monthlyTakeHome)}/mo)
-- EITC: ${result.eitc.eligible ? `Eligible ~${fmt(result.eitc.amount)}` : "Not eligible"}
-- Saver's Credit: ${result.savers.eligible ? `${fmtP(result.savers.rate)} rate` : "Over limit"}
-- CalEITC: ${result.calEitc.eligible ? "Eligible" : "Over limit"}
-${result.penalty ? `\nPENALTY: ~${fmt(result.penalty.estimatedPenalty)} | FTA eligible: ${result.penalty.ftaEligible}\nIMPORTANT: FTA 3-year lookback is from the PENALTY YEAR, not today.` : ""}
-
-RULES:
-- Use specific numbers from their situation
-- Never provide filing advice. You explain and educate.
-- End complex advice with: "Confirm this with your CPA before taking action."
-- Keep responses concise. If asked about other states: "We only support California right now."`;
-
-      const allMsgs = [...msgs, userMsg].map(m => ({ role: m.role, content: m.content }));
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system: sys, messages: allMsgs }),
-      });
-      const data = await res.json();
-      const reply = data.content?.map(c => c.type === "text" ? c.text : "").join("") || "I'm having trouble connecting right now.";
-      setMsgs(p => [...p, { role: "assistant", content: reply }]);
-      if (!isPro) onUse?.();
-    } catch { setMsgs(p => [...p, { role: "assistant", content: "Connection issue — try again shortly." }]); }
-    setLoading(false);
-  }, [input, loading, msgs, result, isPro, onUse]);
-
-  if (!isOpen) return null;
-
-  if (teaser) {
-    return (
-      <motion.div initial={{ opacity: 0, y: 20, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.96 }}
-        style={{ position: "fixed", bottom: 96, right: 16, width: "min(400px, calc(100vw - 32px))", background: C.surface, border: `2px solid ${C.border}`, borderRadius: 24, zIndex: 999, boxShadow: shadow.md, overflow: "hidden" }}>
-        <div style={{ padding: "16px 20px", background: `linear-gradient(135deg, ${C.secondary}, ${C.secondaryLight})`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 22 }}>🤖</span>
-            <span style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>AI Tax Assistant</span>
-          </div>
-          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: 10, width: 36, height: 36, cursor: "pointer", display: "grid", placeItems: "center" }}><X size={18} color="#fff" /></button>
-        </div>
-        <div style={{ padding: 20 }}>
-          <div style={{ padding: "14px 16px", borderRadius: 16, border: `2px solid ${C.border}`, background: C.bg, color: C.textSec, fontSize: 15, lineHeight: 1.6 }}>
-            Based on your {fmt(result.income)} income and {result.filingStatus.replace("_", " ")} filing status, you should consider optimizing your pre-tax strategy and...
-          </div>
-          <p style={{ marginTop: 10, fontSize: 14, color: C.muted }}>Unlock unlimited personalized tax guidance with Pro + AI.</p>
-          {!isPro && (
-            <button onClick={onUpgrade} style={{ marginTop: 14, width: "100%", border: "none", borderRadius: 16, background: C.secondary, color: "#fff", padding: "16px", fontSize: 16, fontWeight: 800, cursor: "pointer", boxShadow: `0 4px 16px ${C.secondary}40` }}>
-              Go Pro + AI — $9.99/mo
-            </button>
-          )}
-          {!isPro && remainingFree > 0 && (
-            <p style={{ marginTop: 10, fontSize: 14, color: C.textSec, textAlign: "center" }}>
-              {remainingFree} free session{remainingFree === 1 ? "" : "s"} left after Full Access unlock.
-            </p>
-          )}
-        </div>
-      </motion.div>
-    );
-  }
-
-  return (
-    <motion.div initial={{ opacity: 0, y: 20, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.96 }}
-      style={{ position: "fixed", bottom: 96, right: 16, width: "min(420px, calc(100vw - 32px))", height: "min(560px, calc(100vh - 140px))", background: C.surface, border: `2px solid ${C.border}`, borderRadius: 24, display: "flex", flexDirection: "column", zIndex: 999, boxShadow: shadow.md, overflow: "hidden" }}>
-      <div style={{ padding: "14px 18px", background: `linear-gradient(135deg, ${C.secondary}, ${C.secondaryLight})`, display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-        <span style={{ fontSize: 22 }}>🤖</span>
-        <div style={{ flex: 1 }}><div style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>{BRAND.name} AI</div><div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", fontWeight: 600 }}>Knows your full scenario</div></div>
-        <button onClick={onClose} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: 10, width: 36, height: 36, cursor: "pointer", display: "grid", placeItems: "center" }}><X size={18} color="#fff" /></button>
-      </div>
-      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 12, background: C.bg }}>
-        {msgs.map((m, i) => (<div key={i} style={{ maxWidth: "85%", padding: "12px 16px", borderRadius: 18, fontSize: 15, lineHeight: 1.6, whiteSpace: "pre-wrap", fontFamily: font.sans, ...(m.role === "user" ? { background: C.secondary, color: "#fff", alignSelf: "flex-end", borderBottomRightRadius: 6 } : { background: C.surface, color: C.text, alignSelf: "flex-start", borderBottomLeftRadius: 6, border: `1px solid ${C.border}` }) }}>{m.content}</div>))}
-        {loading && (<div style={{ display: "flex", gap: 6, padding: "12px 16px", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 18, borderBottomLeftRadius: 6, alignSelf: "flex-start" }}>{[0, 1, 2].map(i => <motion.span key={i} animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.7, delay: i * 0.15 }} style={{ width: 8, height: 8, borderRadius: "50%", background: C.secondary }} />)}</div>)}
-      </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, padding: "10px 16px", borderTop: `1px solid ${C.border}` }}>
-        {quickQ.map(q => <button key={q} onClick={() => send(q)} style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, fontWeight: 600, fontFamily: font.sans, padding: "8px 14px", borderRadius: 99, cursor: "pointer", whiteSpace: "nowrap" }}>{q}</button>)}
-      </div>
-      <div style={{ display: "flex", gap: 10, padding: "12px 16px", borderTop: `1px solid ${C.border}`, background: C.surface }}>
-        <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} placeholder="Ask anything..." style={{ flex: 1, background: C.bg, border: `2px solid ${C.border}`, borderRadius: 14, padding: "12px 14px", fontSize: 15, fontFamily: font.sans, color: C.text, outline: "none" }} />
-        <button onClick={() => send()} style={{ width: 48, height: 48, borderRadius: 14, background: C.secondary, border: "none", cursor: "pointer", display: "grid", placeItems: "center" }}><Send size={18} color="#fff" /></button>
-      </div>
-    </motion.div>
-  );
-}
-
-/* ═══════════════════════════════════════════
    ONBOARDING FLOW — Full-screen immersive
    ═══════════════════════════════════════════ */
 const OB_BG = [
@@ -558,7 +445,6 @@ export default function TaxedApp({ session }) {
   const [deps, setDeps] = useState(0);
   const [hasPenalty, setHasPenalty] = useState(false);
   const [bracketOpen, setBracketOpen] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
   const [actions, setActions] = useState({});
   const [cloudLoading, setCloudLoading] = useState(false);
   const [cloudMessage, setCloudMessage] = useState("");
@@ -568,7 +454,6 @@ export default function TaxedApp({ session }) {
   const [selectedPlan, setSelectedPlan] = useState("full");
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutNotice, setCheckoutNotice] = useState("");
-  const [aiFreeUses, setAiFreeUses] = useState(() => Number(localStorage.getItem("taxed_ai_free_uses") || 0));
   const [checkoutSessionId, setCheckoutSessionId] = useState(() => localStorage.getItem("taxed_checkout_session_id") || "");
   const [incomeWallShown, setIncomeWallShown] = useState(false);
   const reportRef = useRef(null);
@@ -577,8 +462,6 @@ export default function TaxedApp({ session }) {
   const r = useMemo(() => fullCalc(income, status, deps, hasPenalty, 5, true, stateCode), [income, status, deps, hasPenalty, stateCode]);
   const onBoard = (d) => { setIncome(d.income); setStatus(d.status); setDeps(d.deps); setStateCode(d.stateCode); setHasPenalty(d.hasPenalty); setBoarded(true); };
   const hasFullAccess = Boolean(entitlement?.full_access);
-  const hasProAI = Boolean(entitlement?.pro_ai);
-  const canUseAI = hasProAI || aiFreeUses < 2;
 
   useEffect(() => {
     const loadLatestScenario = async () => {
@@ -813,7 +696,7 @@ export default function TaxedApp({ session }) {
       setCheckoutLoading(true);
       setCheckoutNotice("");
       await startCheckout({
-        plan: selectedPlan,
+        plan: selectedPlan === "monthly" ? "pro" : "full",
         email: session?.user?.email || undefined,
         scenario: { income, filingStatus: status, dependents: deps, stateCode },
       });
@@ -983,7 +866,7 @@ export default function TaxedApp({ session }) {
           <div style={{ fontSize: 14, color: C.text, fontWeight: 700 }}>We found {opportunities.length} opportunities in your profile.</div>
           {!hasFullAccess && (
             <div style={{ fontSize: 12, color: C.muted }}>
-              Full diagnostic is free. Unlock full prescriptions from <strong style={{ color: C.text }}>$4.99/mo</strong>.
+              Full diagnostic is free. Unlock everything for <strong style={{ color: C.text }}>$19.99</strong> — lifetime access.
             </div>
           )}
         </div>
@@ -1109,27 +992,29 @@ export default function TaxedApp({ session }) {
                   {paywallReason === "income" && "You're in advanced territory. The full prescription is one tap away."}
                   {paywallReason === "credits" && "We found more opportunities in your profile. Unlock the details."}
                   {paywallReason === "export" && "Exporting your CPA pack is included when you upgrade."}
-                  {paywallReason === "ai" && "Your personalized AI answer is ready. Unlock to see it."}
+                  
                 </p>
               </div>
 
               <div style={{ display: "grid", gap: 12, marginBottom: 20 }}>
-                <button onClick={() => setSelectedPlan("full")} style={{ textAlign: "left", borderRadius: 20, border: `3px solid ${selectedPlan === "full" ? C.primary : C.border}`, background: selectedPlan === "full" ? `${C.primary}0C` : C.surface, padding: "18px 20px", cursor: "pointer", transition: "all 0.15s" }}>
+                <button onClick={() => setSelectedPlan("full")} style={{ textAlign: "left", borderRadius: 20, border: `3px solid ${selectedPlan === "full" ? C.primary : C.border}`, background: selectedPlan === "full" ? `${C.primary}0C` : C.surface, padding: "20px 20px", cursor: "pointer", transition: "all 0.15s", position: "relative", overflow: "hidden" }}>
+                  <div style={{ position: "absolute", top: 0, right: 0, background: C.accent, color: "#fff", fontSize: 12, fontWeight: 800, padding: "4px 12px", borderBottomLeftRadius: 12 }}>Limited offer</div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: C.text }}>Full Access</div>
-                      <div style={{ fontSize: 14, color: C.textSec, marginTop: 2 }}>All cards, exports, and full recommendations</div>
+                      <div style={{ fontSize: 17, fontWeight: 800, color: C.text }}>Lifetime Access</div>
+                      <div style={{ fontSize: 14, color: C.textSec, marginTop: 2 }}>First 10,000 members. One payment, forever yours.</div>
                     </div>
-                    <div style={{ fontFamily: font.sans, fontWeight: 800, color: C.primary, fontSize: 24, whiteSpace: "nowrap" }}>$4.99<span style={{ fontSize: 14, color: C.muted, fontWeight: 600 }}>/mo</span></div>
+                    <div style={{ fontFamily: font.sans, fontWeight: 800, color: C.primary, fontSize: 28, whiteSpace: "nowrap" }}>$19.99</div>
                   </div>
+                  <div style={{ marginTop: 8, fontSize: 13, color: C.accent, fontWeight: 700 }}>Offer ends April 15 — then $29.99/mo</div>
                 </button>
-                <button onClick={() => setSelectedPlan("pro")} style={{ textAlign: "left", borderRadius: 20, border: `3px solid ${selectedPlan === "pro" ? C.secondary : C.border}`, background: selectedPlan === "pro" ? `${C.secondary}0C` : C.surface, padding: "18px 20px", cursor: "pointer", transition: "all 0.15s" }}>
+                <button onClick={() => setSelectedPlan("monthly")} style={{ textAlign: "left", borderRadius: 20, border: `3px solid ${selectedPlan === "monthly" ? C.secondary : C.border}`, background: selectedPlan === "monthly" ? `${C.secondary}0C` : C.surface, padding: "18px 20px", cursor: "pointer", transition: "all 0.15s" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: C.text }}>Pro + AI <span style={{ fontSize: 13, fontWeight: 700, color: C.secondary, background: `${C.secondary}14`, padding: "2px 8px", borderRadius: 99, marginLeft: 6 }}>Popular</span></div>
-                      <div style={{ fontSize: 14, color: C.textSec, marginTop: 2 }}>Everything + unlimited personalized AI sessions</div>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: C.text }}>Monthly Plan</div>
+                      <div style={{ fontSize: 14, color: C.textSec, marginTop: 2 }}>Full access, billed monthly</div>
                     </div>
-                    <div style={{ fontFamily: font.sans, fontWeight: 800, color: C.secondary, fontSize: 24, whiteSpace: "nowrap" }}>$9.99<span style={{ fontSize: 14, color: C.muted, fontWeight: 600 }}>/mo</span></div>
+                    <div style={{ fontFamily: font.sans, fontWeight: 800, color: C.secondary, fontSize: 24, whiteSpace: "nowrap" }}>$29.99<span style={{ fontSize: 14, color: C.muted, fontWeight: 600 }}>/mo</span></div>
                   </div>
                 </button>
               </div>
@@ -1144,45 +1029,19 @@ export default function TaxedApp({ session }) {
               <button
                 onClick={handleCheckout}
                 disabled={checkoutLoading}
-                style={{ width: "100%", border: "none", borderRadius: 18, background: selectedPlan === "pro" ? C.secondary : C.primary, color: "#fff", fontSize: 18, fontWeight: 800, padding: "18px 24px", cursor: checkoutLoading ? "wait" : "pointer", boxShadow: `0 6px 20px ${selectedPlan === "pro" ? C.secondary : C.primary}40`, transition: "all 0.15s" }}
+                style={{ width: "100%", border: "none", borderRadius: 18, background: selectedPlan === "monthly" ? C.secondary : C.primary, color: "#fff", fontSize: 18, fontWeight: 800, padding: "18px 24px", cursor: checkoutLoading ? "wait" : "pointer", boxShadow: `0 6px 20px ${selectedPlan === "pro" ? C.secondary : C.primary}40`, transition: "all 0.15s" }}
               >
                 {checkoutLoading ? "Starting checkout..." : "Let's go"}
               </button>
               <button onClick={() => setPaywallOpen(false)} style={{ width: "100%", marginTop: 10, border: "none", background: "transparent", color: C.muted, fontSize: 15, fontWeight: 700, padding: "12px", cursor: "pointer" }}>
                 Keep exploring for free
               </button>
-              <p style={{ textAlign: "center", marginTop: 8, fontSize: 13, color: C.muted }}>3-month minimum. Cancel anytime after.</p>
+              <p style={{ textAlign: "center", marginTop: 8, fontSize: 13, color: C.muted }}>Secure checkout via Stripe. Cancel monthly plan anytime.</p>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <motion.button onClick={() => setChatOpen(!chatOpen)} whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.92 }}
-        style={{ position: "fixed", bottom: 24, right: 20, width: 64, height: 64, borderRadius: "50%", background: `linear-gradient(135deg, ${C.secondary}, ${C.secondaryLight})`, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 6px 24px ${C.secondary}45`, zIndex: 1000, fontSize: 24 }}
-        aria-label={chatOpen ? "Close chat" : "Open tax assistant"}>
-        {chatOpen ? <X size={24} color="#fff" /> : "🤖"}
-      </motion.button>
-      <AnimatePresence>
-        {chatOpen && (
-          <Chat
-            result={r}
-            isOpen={chatOpen}
-            onClose={() => setChatOpen(false)}
-            teaser={!hasFullAccess || (!hasProAI && !canUseAI)}
-            isPro={hasProAI}
-            remainingFree={Math.max(0, 2 - aiFreeUses)}
-            onUse={() => {
-              const next = aiFreeUses + 1;
-              setAiFreeUses(next);
-              localStorage.setItem("taxed_ai_free_uses", String(next));
-            }}
-            onUpgrade={() => {
-              setSelectedPlan("pro");
-              openPaywall("ai");
-            }}
-          />
-        )}
-      </AnimatePresence>
       <style>{`
         @media (max-width: 768px) {
           .calculator-page { padding-bottom: 100px !important; }
