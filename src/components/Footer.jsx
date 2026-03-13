@@ -34,14 +34,14 @@ export default function Footer() {
 
     return (
         <footer className="site-footer" style={{
-            background: 'rgba(255,255,255,0.03)',
-            borderTop: '1px solid rgba(255,255,255,0.08)',
-            padding: '64px 24px 40px',
+            background: 'rgba(255,255,255,0.66)',
+            borderTop: '1px solid rgba(16,42,67,0.1)',
+            padding: '72px 24px 44px',
             fontFamily: font.sans,
             position: 'relative',
             zIndex: 1,
         }}>
-            <div className="footer-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: 48 }}>
+            <div className="footer-grid" style={{ maxWidth: 1160, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: 56 }}>
 
                 {/* Brand */}
                 <div>
@@ -63,11 +63,11 @@ export default function Footer() {
                                 }}>
                                     <FileText size={16} color="#fff" />
                                 </div>
-                                <span style={{ fontFamily: font.serif, fontSize: 20, color: '#fff' }}>Taxed</span>
+                                <span style={{ fontFamily: font.serif, fontSize: 20, color: '#102a43' }}>Taxed</span>
                             </>
                         )}
                     </Link>
-                    <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>
+                    <p style={{ color: '#4f6478', fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>
                         Finally see where your money goes.<br />
                         Educational purpose tax tools and world-class insights.
                     </p>
@@ -81,24 +81,24 @@ export default function Footer() {
                                 aria-label={`${item.label} ${item.handle}`}
                                 onTouchStart={() => setActiveTip(item.id)}
                                 style={{
-                                    width: 36, height: 36, borderRadius: 10,
-                                    background: 'rgba(255,255,255,0.07)',
-                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    width: 34, height: 34, borderRadius: 12,
+                                    background: '#eef4fb',
+                                    border: '1px solid #d8e3f0',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    color: 'rgba(255,255,255,0.5)',
-                                    transition: 'all 0.2s',
+                                    color: '#4f6478',
+                                    transition: 'all 0.18s',
                                     textDecoration: 'none',
                                     position: 'relative',
                                 }}
                                 onMouseEnter={e => {
                                     setActiveTip(item.id);
-                                    e.currentTarget.style.background = 'rgba(255,255,255,0.12)';
-                                    e.currentTarget.style.color = '#fff';
+                                    e.currentTarget.style.background = '#e4edf7';
+                                    e.currentTarget.style.color = '#102a43';
                                 }}
                                 onMouseLeave={e => {
                                     setActiveTip(null);
-                                    e.currentTarget.style.background = 'rgba(255,255,255,0.07)';
-                                    e.currentTarget.style.color = 'rgba(255,255,255,0.5)';
+                                    e.currentTarget.style.background = '#eef4fb';
+                                    e.currentTarget.style.color = '#4f6478';
                                 }}
                             >
                                 <Icon size={16} />
@@ -112,7 +112,7 @@ export default function Footer() {
 
                 {/* Tools */}
                 <div>
-                    <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#34D399', marginBottom: 20 }}>Tools</h4>
+                    <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#1f9d8b', marginBottom: 20 }}>Tools</h4>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
                         {[
                             { label: 'Tax Navigator', path: '/calculator' },
@@ -120,9 +120,9 @@ export default function Footer() {
                             { label: 'Credit Finder', path: '/calculator' },
                         ].map((item, i) => (
                             <li key={i}>
-                                <Link to={item.path} style={{ color: 'rgba(255,255,255,0.45)', textDecoration: 'none', fontSize: 14, transition: 'color 0.2s' }}
-                                    onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-                                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.45)'}
+                                <Link to={item.path} className="footer-link" style={{ color: '#4f6478', textDecoration: 'none', fontSize: 13, transition: 'color 0.18s' }}
+                                    onMouseEnter={e => e.currentTarget.style.color = '#102a43'}
+                                    onMouseLeave={e => e.currentTarget.style.color = '#4f6478'}
                                 >{item.label}</Link>
                             </li>
                         ))}
@@ -131,7 +131,7 @@ export default function Footer() {
 
                 {/* Resources */}
                 <div>
-                    <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#34D399', marginBottom: 20 }}>Resources</h4>
+                    <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#1f9d8b', marginBottom: 20 }}>Resources</h4>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
                         {[
                             { label: 'Tax Deadlines 2024', path: '/resources' },
@@ -139,9 +139,9 @@ export default function Footer() {
                             { label: 'Find a CPA', path: '/resources' },
                         ].map((item, i) => (
                             <li key={i}>
-                                <Link to={item.path} style={{ color: 'rgba(255,255,255,0.45)', textDecoration: 'none', fontSize: 14, transition: 'color 0.2s' }}
-                                    onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-                                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.45)'}
+                                <Link to={item.path} className="footer-link" style={{ color: '#4f6478', textDecoration: 'none', fontSize: 13, transition: 'color 0.18s' }}
+                                    onMouseEnter={e => e.currentTarget.style.color = '#102a43'}
+                                    onMouseLeave={e => e.currentTarget.style.color = '#4f6478'}
                                 >{item.label}</Link>
                             </li>
                         ))}
@@ -150,16 +150,16 @@ export default function Footer() {
 
                 {/* Legal */}
                 <div>
-                    <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#34D399', marginBottom: 20 }}>Legal</h4>
+                    <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#1f9d8b', marginBottom: 20 }}>Legal</h4>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
                         {[
                             { label: 'Privacy Policy', path: '/privacy' },
                             { label: 'Terms of Service', path: '/terms' },
                         ].map((item, i) => (
                             <li key={i}>
-                                <Link to={item.path} style={{ color: 'rgba(255,255,255,0.45)', textDecoration: 'none', fontSize: 14, transition: 'color 0.2s' }}
-                                    onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-                                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.45)'}
+                                <Link to={item.path} className="footer-link" style={{ color: '#4f6478', textDecoration: 'none', fontSize: 13, transition: 'color 0.18s' }}
+                                    onMouseEnter={e => e.currentTarget.style.color = '#102a43'}
+                                    onMouseLeave={e => e.currentTarget.style.color = '#4f6478'}
                                 >{item.label}</Link>
                             </li>
                         ))}
@@ -168,20 +168,20 @@ export default function Footer() {
             </div>
 
             <div className="footer-bottom" style={{
-                maxWidth: 1200, margin: '48px auto 0', paddingTop: 24,
-                borderTop: '1px solid rgba(255,255,255,0.07)',
+                maxWidth: 1160, margin: '56px auto 0', paddingTop: 26,
+                borderTop: '1px solid rgba(16,42,67,0.1)',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                flexWrap: 'wrap', gap: 12, fontSize: 12, color: 'rgba(255,255,255,0.3)'
+                flexWrap: 'wrap', gap: 12, fontSize: 12, color: '#6b7f93'
             }}>
                 <span>&copy; {new Date().getFullYear()} Taxed. Not actual tax advice.</span>
                 <div className="footer-legal-links" style={{ display: 'flex', gap: 24 }}>
-                    <Link to="/privacy" style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.3)', transition: 'color 0.2s' }}
-                        onMouseEnter={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}
-                        onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.3)'}
+                    <Link to="/privacy" className="footer-link" style={{ textDecoration: 'none', color: '#6b7f93', transition: 'color 0.2s' }}
+                        onMouseEnter={e => e.currentTarget.style.color = '#102a43'}
+                        onMouseLeave={e => e.currentTarget.style.color = '#6b7f93'}
                     >Privacy Policy</Link>
-                    <Link to="/terms" style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.3)', transition: 'color 0.2s' }}
-                        onMouseEnter={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}
-                        onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.3)'}
+                    <Link to="/terms" className="footer-link" style={{ textDecoration: 'none', color: '#6b7f93', transition: 'color 0.2s' }}
+                        onMouseEnter={e => e.currentTarget.style.color = '#102a43'}
+                        onMouseLeave={e => e.currentTarget.style.color = '#6b7f93'}
                     >Terms of Service</Link>
                 </div>
             </div>
@@ -203,9 +203,9 @@ export default function Footer() {
                 left: 50%;
                 top: -8px;
                 transform: translate(-50%, -100%);
-                background: rgba(8, 8, 12, 0.95);
-                color: rgba(255,255,255,0.9);
-                border: 1px solid rgba(255,255,255,0.14);
+                background: #ffffff;
+                color: #102a43;
+                border: 1px solid #d8e3f0;
                 border-radius: 8px;
                 padding: 4px 8px;
                 font-size: 10px;
@@ -219,6 +219,17 @@ export default function Footer() {
 
               .social-btn .social-tip.show {
                 opacity: 1;
+              }
+
+              .social-btn:active,
+              .footer-link:active {
+                transform: translateY(0.5px) scale(0.98);
+              }
+
+              .social-btn:focus-visible,
+              .footer-link:focus-visible {
+                box-shadow: 0 0 0 3px rgba(31,157,139,0.2);
+                outline: none;
               }
             `}</style>
         </footer>

@@ -6,9 +6,9 @@ import { useState, useEffect } from 'react';
 const font = { serif: "'DM Serif Display', Georgia, serif", sans: "'DM Sans', system-ui, sans-serif" };
 
 const glass = {
-    background: 'rgba(10,10,18,0.75)',
-    backdropFilter: 'blur(40px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+    background: 'rgba(255,255,255,0.82)',
+    backdropFilter: 'blur(20px) saturate(125%)',
+    WebkitBackdropFilter: 'blur(20px) saturate(125%)',
 };
 
 export default function Navbar({ session, onSignOut }) {
@@ -41,14 +41,14 @@ export default function Navbar({ session, onSignOut }) {
             position: 'fixed',
             top: 0, left: 0, right: 0,
             ...glass,
-            borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
+            borderBottom: scrolled ? '1px solid rgba(16,42,67,0.08)' : '1px solid transparent',
             transition: 'border-color 0.3s ease',
             zIndex: 999,
             fontFamily: font.sans,
         }}>
             <div className="nav-shell" style={{
-                maxWidth: 1200, margin: '0 auto', padding: '0 24px',
-                height: 64, display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                maxWidth: 1160, margin: '0 auto', padding: '0 28px',
+                height: 68, display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
                 {/* Logo */}
                 <Link to="/" className="brand-link" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: 'none' }}>
@@ -69,7 +69,7 @@ export default function Navbar({ session, onSignOut }) {
                             }}>
                                 <FileText size={16} color="#fff" />
                             </div>
-                            <span className="brand-name" style={{ fontFamily: font.serif, fontSize: 20, color: '#fff', letterSpacing: '-0.01em' }}>Taxed</span>
+                            <span className="brand-name" style={{ fontFamily: font.serif, fontSize: 20, color: '#102a43', letterSpacing: '-0.01em' }}>Taxed</span>
                         </>
                     )}
                 </Link>
@@ -77,15 +77,15 @@ export default function Navbar({ session, onSignOut }) {
                 {/* Desktop Nav */}
                 <div style={{ display: 'none', gap: 8, alignItems: 'center' }} className="nav-desktop">
                     {links.map(l => (
-                        <Link key={l.path} to={l.path} style={{
-                            fontSize: 14, fontWeight: 500,
-                            color: isActive(l.path) ? '#34D399' : 'rgba(255,255,255,0.65)',
-                            textDecoration: 'none', padding: '8px 14px', borderRadius: 10,
-                            transition: 'all 0.2s',
-                            background: isActive(l.path) ? 'rgba(52,211,153,0.1)' : 'transparent',
+                        <Link key={l.path} to={l.path} className="nav-pill" style={{
+                            fontSize: 13, fontWeight: 500,
+                            color: isActive(l.path) ? '#1f9d8b' : '#4f6478',
+                            textDecoration: 'none', padding: '7px 12px', borderRadius: 999,
+                            transition: 'all 0.18s',
+                            background: isActive(l.path) ? 'rgba(31,157,139,0.1)' : 'transparent',
                         }}
-                            onMouseEnter={e => { if (!isActive(l.path)) e.currentTarget.style.color = '#fff'; }}
-                            onMouseLeave={e => { if (!isActive(l.path)) e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; }}
+                            onMouseEnter={e => { if (!isActive(l.path)) e.currentTarget.style.color = '#102a43'; }}
+                            onMouseLeave={e => { if (!isActive(l.path)) e.currentTarget.style.color = '#4f6478'; }}
                         >
                             {l.name}
                         </Link>
@@ -93,28 +93,29 @@ export default function Navbar({ session, onSignOut }) {
                     {session ? (
                         <button
                             onClick={onSignOut}
+                            className="nav-secondary-btn"
                             style={{
                                 marginLeft: 8,
-                                padding: "10px 18px", borderRadius: 99,
-                                background: 'rgba(255,255,255,0.08)', color: "#fff",
-                                border: '1px solid rgba(255,255,255,0.16)',
-                                fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                                transition: 'all 0.2s', display: 'inline-block', whiteSpace: 'nowrap'
+                                padding: "9px 16px", borderRadius: 99,
+                                background: '#eef4fb', color: "#102a43",
+                                border: '1px solid #d8e3f0',
+                                fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                                transition: 'all 0.18s', display: 'inline-block', whiteSpace: 'nowrap'
                             }}
                         >
                             Log Out
                         </button>
                     ) : (
-                        <Link to="/auth" style={{
+                        <Link to="/auth" className="nav-primary-btn" style={{
                             marginLeft: 8,
-                            padding: "10px 20px", borderRadius: 99,
-                            background: '#34D399', color: "#000",
-                            fontSize: 13, fontWeight: 700, textDecoration: 'none',
-                            boxShadow: '0 4px 20px rgba(52,211,153,0.35)',
-                            transition: 'all 0.2s', display: 'inline-block', whiteSpace: 'nowrap'
+                            padding: "9px 18px", borderRadius: 99,
+                            background: '#1f9d8b', color: "#fff",
+                            fontSize: 13, fontWeight: 600, textDecoration: 'none',
+                            boxShadow: '0 3px 12px rgba(31,157,139,0.22)',
+                            transition: 'all 0.18s', display: 'inline-block', whiteSpace: 'nowrap'
                         }}
-                            onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 28px rgba(52,211,153,0.5)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                            onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 20px rgba(52,211,153,0.35)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                            onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 5px 18px rgba(31,157,139,0.3)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 3px 12px rgba(31,157,139,0.22)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                         >
                             Log In / Sign Up
                         </Link>
@@ -125,7 +126,7 @@ export default function Navbar({ session, onSignOut }) {
                 <button
                     onClick={() => setIsOpen(!isOpen)}
                     className="nav-mobile-btn"
-                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '8px', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{ background: '#eef4fb', border: '1px solid #d8e3f0', borderRadius: 12, padding: '8px', cursor: 'pointer', color: '#102a43', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                     {isOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
@@ -138,21 +139,21 @@ export default function Navbar({ session, onSignOut }) {
                         initial={{ opacity: 0, y: -8 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -8 }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: 0.16 }}
                         style={{
                             position: 'absolute', top: '100%', left: 0, right: 0,
                             ...glass,
-                            borderBottom: '1px solid rgba(255,255,255,0.08)',
+                            borderBottom: '1px solid rgba(16,42,67,0.1)',
                             padding: '16px 24px 24px',
                             display: 'flex', flexDirection: 'column', gap: 4
                         }}
                     >
                         {links.map(l => (
-                            <Link key={l.path} to={l.path} onClick={() => setIsOpen(false)} style={{
+                            <Link key={l.path} to={l.path} onClick={() => setIsOpen(false)} className="nav-mobile-pill" style={{
                                 fontSize: 16, fontWeight: 600,
-                                color: isActive(l.path) ? '#34D399' : 'rgba(255,255,255,0.8)',
+                                color: isActive(l.path) ? '#1f9d8b' : '#334e68',
                                 textDecoration: 'none', padding: '14px 16px', borderRadius: 12,
-                                background: isActive(l.path) ? 'rgba(52,211,153,0.08)' : 'transparent',
+                                background: isActive(l.path) ? 'rgba(31,157,139,0.1)' : 'transparent',
                             }}>
                                 {l.name}
                             </Link>
@@ -160,21 +161,22 @@ export default function Navbar({ session, onSignOut }) {
                         {session ? (
                             <button
                                 onClick={async () => { setIsOpen(false); await onSignOut(); }}
+                                className="nav-secondary-btn"
                                 style={{
                                     marginTop: 8, padding: "16px", borderRadius: 14,
-                                    background: 'rgba(255,255,255,0.08)', color: "#fff",
-                                    border: '1px solid rgba(255,255,255,0.16)',
+                                    background: '#eef4fb', color: "#102a43",
+                                    border: '1px solid #d8e3f0',
                                     textAlign: 'center', fontSize: 15, fontWeight: 700, cursor: 'pointer'
                                 }}
                             >
                                 Log Out
                             </button>
                         ) : (
-                            <Link to="/auth" onClick={() => setIsOpen(false)} style={{
+                            <Link to="/auth" onClick={() => setIsOpen(false)} className="nav-primary-btn" style={{
                                 marginTop: 8, padding: "16px", borderRadius: 14,
-                                background: '#34D399', color: "#000",
+                                background: '#1f9d8b', color: "#fff",
                                 textAlign: 'center', fontSize: 15, fontWeight: 700, textDecoration: 'none',
-                                boxShadow: '0 4px 20px rgba(52,211,153,0.35)'
+                                boxShadow: '0 4px 18px rgba(31,157,139,0.26)'
                             }}>
                                 Log In / Sign Up
                             </Link>
@@ -184,6 +186,23 @@ export default function Navbar({ session, onSignOut }) {
             </AnimatePresence>
 
             <style>{`
+        .nav-pill:active,
+        .nav-mobile-pill:active,
+        .nav-primary-btn:active,
+        .nav-secondary-btn:active,
+        .nav-mobile-btn:active {
+          transform: translateY(0.5px) scale(0.98);
+        }
+
+        .nav-pill:focus-visible,
+        .nav-mobile-pill:focus-visible,
+        .nav-primary-btn:focus-visible,
+        .nav-secondary-btn:focus-visible,
+        .nav-mobile-btn:focus-visible {
+          box-shadow: 0 0 0 3px rgba(31,157,139,0.24);
+          outline: none;
+        }
+
         @media (min-width: 900px) {
           .nav-desktop { display: flex !important; }
           .nav-mobile-btn { display: none !important; }

@@ -164,9 +164,9 @@ const fmt = (n) => "$" + Math.round(n).toLocaleString();
 const fmtP = (r) => (r * 100).toFixed(1) + "%";
 const short = (n) => n >= 1000 ? "$" + Math.round(n / 1000) + "K" : fmt(n);
 
-const C = { primary: "#34D399", primaryLight: "#6EE7B7", primaryDark: "#059669", accent: "#F59E0B", accentLight: "#FCD34D", accentDark: "#D97706", success: "#34D399", warning: "#F59E0B", danger: "#F87171", info: "#60A5FA", bg: "#0A0A12", surface: "rgba(255,255,255,0.07)", border: "rgba(255,255,255,0.1)", text: "#FFFFFF", textSec: "rgba(255,255,255,0.55)", muted: "rgba(255,255,255,0.32)" };
+const C = { primary: "#1f9d8b", primaryLight: "#57c8ba", primaryDark: "#127f72", accent: "#f59e0b", accentLight: "#fcd34d", accentDark: "#b45309", success: "#16a34a", warning: "#f59e0b", danger: "#dc2626", info: "#3b82f6", bg: "#f5f9ff", surface: "rgba(255,255,255,0.82)", border: "#d8e3f0", text: "#102a43", textSec: "#4f6478", muted: "#6b7f93" };
 const font = { serif: "'DM Serif Display', Georgia, serif", sans: "'DM Sans', system-ui, sans-serif", mono: "'JetBrains Mono', monospace" };
-const shadow = { sm: "0 1px 4px rgba(0,0,0,0.3)", md: "0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)", card: "0 2px 12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06)" };
+const shadow = { sm: "0 1px 4px rgba(16,42,67,0.1)", md: "0 8px 28px rgba(16,42,67,0.16), 0 0 0 1px rgba(216,227,240,0.6)", card: "0 2px 10px rgba(16,42,67,0.12), 0 0 0 1px rgba(216,227,240,0.7)" };
 
 const FILING = [
   { value: "single", label: "Single", icon: User, sub: "Unmarried, no dependents" },
