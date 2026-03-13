@@ -109,7 +109,7 @@ export default function Landing() {
             style={{ ...glass, borderRadius: 22, padding: 16, marginBottom: 18 }}
           >
             <div style={{ borderRadius: 14, overflow: "hidden", border: "1px solid #d8e3f0", background: "#fff" }}>
-              <video src={demoVideoSrc} poster={demoPosterSrc} controls muted playsInline preload="metadata" style={{ width: "100%", display: "block", minHeight: 220, objectFit: "cover" }} />
+              <video src={demoVideoSrc} poster={demoPosterSrc} autoPlay loop muted playsInline preload="auto" style={{ width: "100%", display: "block", minHeight: 220, objectFit: "cover" }} />
             </div>
           </motion.div>
 
