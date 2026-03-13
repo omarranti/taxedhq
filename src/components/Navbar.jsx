@@ -11,7 +11,7 @@ const glass = {
     WebkitBackdropFilter: 'blur(20px) saturate(125%)',
 };
 
-export default function Navbar({ session, onSignOut }) {
+export default function Navbar({ session, onSignOut, isAdmin, onAdminLogout }) {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [logoError, setLogoError] = useState(false);
@@ -30,9 +30,10 @@ export default function Navbar({ session, onSignOut }) {
         { name: "How it Works", path: "/#how-it-works" },
         { name: "Tax Navigator", path: "/calculator" },
         { name: "Resource Hub", path: "/resources" },
+        { name: "Admin", path: "/admin" },
     ];
 
-    const isActive = (path) => path === '/calculator' || path === '/resources'
+    const isActive = (path) => path === '/calculator' || path === '/resources' || path === '/admin'
         ? location.pathname === path
         : false;
 
@@ -120,6 +121,22 @@ export default function Navbar({ session, onSignOut }) {
                             Log In / Sign Up
                         </Link>
                     )}
+                    {isAdmin && (
+                        <button
+                            onClick={onAdminLogout}
+                            className="nav-secondary-btn"
+                            style={{
+                                marginLeft: 8,
+                                padding: "9px 16px", borderRadius: 99,
+                                background: '#fff4ef', color: "#9a3412",
+                                border: '1px solid #fed7aa',
+                                fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                                transition: 'all 0.18s', display: 'inline-block', whiteSpace: 'nowrap'
+                            }}
+                        >
+                            Admin Log Out
+                        </button>
+                    )}
                 </div>
 
                 {/* Mobile toggle */}
@@ -180,6 +197,20 @@ export default function Navbar({ session, onSignOut }) {
                             }}>
                                 Log In / Sign Up
                             </Link>
+                        )}
+                        {isAdmin && (
+                            <button
+                                onClick={() => { setIsOpen(false); onAdminLogout(); }}
+                                className="nav-secondary-btn"
+                                style={{
+                                    marginTop: 8, padding: "16px", borderRadius: 14,
+                                    background: '#fff4ef', color: "#9a3412",
+                                    border: '1px solid #fed7aa',
+                                    textAlign: 'center', fontSize: 15, fontWeight: 700, cursor: 'pointer'
+                                }}
+                            >
+                                Admin Log Out
+                            </button>
                         )}
                     </motion.div>
                 )}
