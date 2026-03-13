@@ -165,9 +165,9 @@ const fmt = (n) => "$" + Math.round(n).toLocaleString();
 const fmtP = (r) => (r * 100).toFixed(1) + "%";
 const short = (n) => n >= 1000 ? "$" + Math.round(n / 1000) + "K" : fmt(n);
 
-const C = { primary: "#1f9d8b", primaryLight: "#57c8ba", primaryDark: "#127f72", accent: "#f59e0b", accentLight: "#fcd34d", accentDark: "#b45309", success: "#16a34a", warning: "#f59e0b", danger: "#dc2626", info: "#3b82f6", bg: "#f5f9ff", surface: "rgba(255,255,255,0.82)", border: "#d8e3f0", text: "#102a43", textSec: "#4f6478", muted: "#6b7f93" };
-const font = { serif: "'DM Serif Display', Georgia, serif", sans: "'DM Sans', system-ui, sans-serif", mono: "'JetBrains Mono', monospace" };
-const shadow = { sm: "0 1px 4px rgba(16,42,67,0.1)", md: "0 8px 28px rgba(16,42,67,0.16), 0 0 0 1px rgba(216,227,240,0.6)", card: "0 2px 10px rgba(16,42,67,0.12), 0 0 0 1px rgba(216,227,240,0.7)" };
+const C = { primary: "#1f9d8b", primaryLight: "#57c8ba", primaryDark: "#127f72", secondary: "#6C5CE7", secondaryLight: "#a29bfe", accent: "#FF6B6B", accentLight: "#ffa8a8", accentDark: "#e05252", success: "#10b981", warning: "#f59e0b", danger: "#ef4444", info: "#6366f1", bg: "#FFFDF7", surface: "#FFFFFF", border: "#EEE8E0", text: "#1A1A2E", textSec: "#555770", muted: "#8E8EA0" };
+const font = { sans: "'DM Sans', system-ui, sans-serif" };
+const shadow = { sm: "0 2px 8px rgba(26,26,46,0.06)", md: "0 12px 32px rgba(26,26,46,0.1)", card: "0 4px 16px rgba(26,26,46,0.07)" };
 
 const FILING = [
   { value: "single", label: "Single", icon: User, sub: "Unmarried, no dependents" },
@@ -186,22 +186,21 @@ const STATES = [
 /* ═══════════════════════════════════════════
    REUSABLE COMPONENTS
    ═══════════════════════════════════════════ */
-function Sect({ children }) {
-  return (<div style={{ display: "flex", alignItems: "center", gap: 14, margin: "52px 0 20px", whiteSpace: "nowrap" }}><span style={{ fontFamily: font.sans, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.muted }}>{children}</span><div style={{ flex: 1, height: 1, background: C.border }} /></div>);
+function Sect({ children, icon }) {
+  return (<div style={{ display: "flex", alignItems: "center", gap: 10, margin: "48px 0 20px" }}>{icon && <span style={{ fontSize: 22 }}>{icon}</span>}<span style={{ fontFamily: font.sans, fontSize: 20, fontWeight: 800, color: C.text }}>{children}</span></div>);
 }
 
 function KPI({ label, value, color, desc, icon: Icon, delay = 0, children, onClick }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.35 }} onClick={onClick}
-      style={{ background: C.surface, borderRadius: 18, padding: "28px 28px", border: `1px solid ${C.border}`, boxShadow: shadow.card, position: "relative", overflow: "hidden", cursor: onClick ? "pointer" : "default" }}
-      whileHover={onClick ? { boxShadow: shadow.md } : undefined}>
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: color || C.primary, opacity: 0.7 }} />
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-        {Icon && <Icon size={15} color={C.muted} />}
-        <span style={{ fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: "0.08em", textTransform: "uppercase" }}>{label}</span>
+    <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.4, ease: [0.22, 1, 0.36, 1] }} onClick={onClick}
+      style={{ background: C.surface, borderRadius: 24, padding: "32px 28px", border: `2px solid ${C.border}`, boxShadow: shadow.card, position: "relative", overflow: "hidden", cursor: onClick ? "pointer" : "default" }}
+      whileHover={onClick ? { y: -2, boxShadow: shadow.md } : undefined}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+        {Icon && <div style={{ width: 40, height: 40, borderRadius: 12, background: `${color || C.primary}14`, display: "grid", placeItems: "center" }}><Icon size={20} color={color || C.primary} /></div>}
+        <span style={{ fontSize: 14, fontWeight: 700, color: C.muted }}>{label}</span>
       </div>
-      <div style={{ fontFamily: font.serif, fontSize: 34, color: color || C.primary, lineHeight: 1.1 }}>{value}</div>
-      {desc && <div style={{ marginTop: 10, fontSize: 14, color: C.textSec, lineHeight: 1.55 }}>{desc}</div>}
+      <div style={{ fontFamily: font.sans, fontWeight: 800, fontSize: 42, color: color || C.primary, lineHeight: 1.1, fontVariantNumeric: "tabular-nums" }}>{value}</div>
+      {desc && <div style={{ marginTop: 12, fontSize: 15, color: C.textSec, lineHeight: 1.55 }}>{desc}</div>}
       {children}
     </motion.div>
   );
@@ -209,13 +208,16 @@ function KPI({ label, value, color, desc, icon: Icon, delay = 0, children, onCli
 
 function Bar({ label, amount, amtColor, pct, color, delay = 0 }) {
   return (
-    <div style={{ marginBottom: 20 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 7, fontSize: 15, gap: 8 }}>
-        <span style={{ color: C.text }}>{label}</span>
-        <span style={{ fontFamily: font.mono, fontWeight: 600, color: amtColor || C.primary, whiteSpace: "nowrap", fontSize: 14 }}>{amount}</span>
+    <div style={{ marginBottom: 24 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 10, height: 10, borderRadius: "50%", background: color, flexShrink: 0 }} />
+          <span style={{ color: C.text, fontSize: 15, fontWeight: 600 }}>{label}</span>
+        </div>
+        <span style={{ fontFamily: font.sans, fontWeight: 800, color: amtColor || C.primary, whiteSpace: "nowrap", fontSize: 15, fontVariantNumeric: "tabular-nums" }}>{amount}</span>
       </div>
-      <div style={{ height: 12, background: C.border, borderRadius: 99, overflow: "hidden" }}>
-        <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.8, delay, ease: [0.25, 0.1, 0.25, 1] }}
+      <div style={{ height: 18, background: C.border, borderRadius: 99, overflow: "hidden" }}>
+        <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ type: "spring", stiffness: 80, damping: 20, delay }}
           style={{ height: "100%", width: `${Math.min(100, Math.max(0.4, pct))}%`, background: color, borderRadius: 99, transformOrigin: "left" }} />
       </div>
     </div>
@@ -223,46 +225,43 @@ function Bar({ label, amount, amtColor, pct, color, delay = 0 }) {
 }
 
 function Brackets({ title, brackets, color, total, income }) {
-  if (!brackets.length) return (<div style={{ padding: "10px 0" }}><div style={{ fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>{title}</div><div style={{ fontSize: 13, color: C.success, fontWeight: 600 }}>Income below standard deduction — $0 tax ✓</div></div>);
+  if (!brackets.length) return (<div style={{ padding: "12px 0" }}><div style={{ fontSize: 14, fontWeight: 700, color: C.muted, marginBottom: 8 }}>{title}</div><div style={{ fontSize: 15, color: C.success, fontWeight: 700 }}>Income below standard deduction — $0 tax ✓</div></div>);
   return (
-    <div style={{ padding: "10px 0" }}>
-      <div style={{ fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>{title}</div>
+    <div style={{ padding: "12px 0" }}>
+      <div style={{ fontSize: 14, fontWeight: 700, color: C.muted, marginBottom: 12 }}>{title}</div>
       {brackets.map((b, i) => (
-        <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", borderBottom: i < brackets.length - 1 ? `1px solid ${C.bg}` : "none" }}>
-          <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 99, background: `${color}10`, color, border: `1px solid ${color}25`, whiteSpace: "nowrap" }}>{fmtP(b.rate)}</span>
-          <span style={{ flex: 1, fontSize: 12, color: C.textSec }}>{fmt(b.rangeStart + (i > 0 ? 1 : 0))} – {b.rangeEnd === Infinity ? "∞" : fmt(b.rangeEnd)}</span>
-          <span style={{ fontFamily: font.mono, fontSize: 12, fontWeight: 600, color: C.text }}>{fmt(b.taxOnBracket)}</span>
+        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0", borderBottom: i < brackets.length - 1 ? `1px solid ${C.border}` : "none" }}>
+          <span style={{ fontSize: 13, fontWeight: 800, padding: "3px 10px", borderRadius: 99, background: `${color}14`, color, whiteSpace: "nowrap" }}>{fmtP(b.rate)}</span>
+          <span style={{ flex: 1, fontSize: 14, color: C.textSec }}>{fmt(b.rangeStart + (i > 0 ? 1 : 0))} – {b.rangeEnd === Infinity ? "∞" : fmt(b.rangeEnd)}</span>
+          <span style={{ fontFamily: font.sans, fontSize: 14, fontWeight: 700, color: C.text, fontVariantNumeric: "tabular-nums" }}>{fmt(b.taxOnBracket)}</span>
         </div>
       ))}
-      <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 10, marginTop: 6, borderTop: `2px solid ${color}15` }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>Subtotal</span>
-        <span style={{ fontFamily: font.serif, fontSize: 16, color }}>{fmt(total)} <span style={{ fontSize: 11, color: C.muted, fontFamily: font.sans, marginLeft: 4 }}>({fmtP(income > 0 ? total / income : 0)} eff.)</span></span>
+      <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 12, marginTop: 8, borderTop: `2px solid ${color}18` }}>
+        <span style={{ fontSize: 15, fontWeight: 800, color: C.text }}>Subtotal</span>
+        <span style={{ fontFamily: font.sans, fontSize: 18, fontWeight: 800, color }}>{fmt(total)} <span style={{ fontSize: 13, color: C.muted, fontWeight: 600, marginLeft: 4 }}>({fmtP(income > 0 ? total / income : 0)} eff.)</span></span>
       </div>
     </div>
   );
 }
 
 function SCard({ icon, name, value, vColor, desc, badge, bColor, delay = 0, locked = false, range = "", onUnlock }) {
-  const bs = { green: { bg: `${C.success}10`, c: C.success, bd: `${C.success}25` }, amber: { bg: `${C.warning}10`, c: C.accentDark, bd: `${C.warning}25` }, blue: { bg: `${C.info}10`, c: C.info, bd: `${C.info}25` }, red: { bg: `${C.danger}10`, c: C.danger, bd: `${C.danger}25` }, gray: { bg: `${C.muted}12`, c: C.muted, bd: `${C.muted}25` }, purple: { bg: "#8B5CF610", c: "#8B5CF6", bd: "#8B5CF625" } }[bColor] || { bg: `${C.success}10`, c: C.success, bd: `${C.success}25` };
+  const bs = { green: { bg: `${C.success}14`, c: C.success }, amber: { bg: `${C.warning}14`, c: C.accentDark }, blue: { bg: `${C.info}14`, c: C.info }, red: { bg: `${C.danger}14`, c: C.danger }, gray: { bg: `${C.muted}14`, c: C.muted }, purple: { bg: "#6C5CE714", c: "#6C5CE7" } }[bColor] || { bg: `${C.success}14`, c: C.success };
   return (
-    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.35 }}
-      style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 18, padding: "24px 24px", boxShadow: shadow.sm, transition: "transform 0.2s, box-shadow 0.2s" }}
+    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      style={{ background: C.surface, border: `2px solid ${C.border}`, borderRadius: 24, padding: "28px 24px", boxShadow: shadow.sm, transition: "transform 0.2s, box-shadow 0.2s" }}
       whileHover={{ y: -3, boxShadow: shadow.md }}>
-      <div style={{ fontSize: 26, marginBottom: 10 }}>{icon}</div>
-      <div style={{ fontFamily: font.serif, fontSize: 16, color: C.text, marginBottom: 3 }}>{name}</div>
-      <div style={{ fontFamily: font.mono, fontSize: 14, fontWeight: 600, color: vColor || C.primary, marginBottom: 10 }}>
+      <div style={{ width: 48, height: 48, borderRadius: 14, background: `${vColor || C.primary}14`, display: "grid", placeItems: "center", marginBottom: 14, fontSize: 24 }}>{icon}</div>
+      <div style={{ fontSize: 17, fontWeight: 800, color: C.text, marginBottom: 4 }}>{name}</div>
+      <div style={{ fontFamily: font.sans, fontSize: 16, fontWeight: 700, color: vColor || C.primary, marginBottom: 10, fontVariantNumeric: "tabular-nums" }}>
         {locked ? (range || "Estimated opportunity") : value}
       </div>
-      <div style={{ fontSize: 13, color: C.textSec, lineHeight: 1.65, marginBottom: 12, filter: locked ? "blur(1.5px)" : "none" }}>
+      <div style={{ fontSize: 15, color: C.textSec, lineHeight: 1.65, marginBottom: 14, opacity: locked ? 0.45 : 1, transition: "opacity 0.2s" }}>
         {desc}
       </div>
-      {badge && <span style={{ display: "inline-block", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", padding: "4px 11px", borderRadius: 99, background: bs.bg, color: bs.c, border: `1px solid ${bs.bd}` }}>{badge}</span>}
+      {badge && <span style={{ display: "inline-block", fontSize: 13, fontWeight: 800, padding: "6px 14px", borderRadius: 99, background: bs.bg, color: bs.c }}>{badge}</span>}
       {locked && (
-        <button
-          onClick={onUnlock}
-          style={{ marginTop: 12, width: "100%", border: "none", borderRadius: 12, background: C.primary, color: "#fff", padding: "10px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
-        >
-          Unlock details
+        <button onClick={onUnlock} style={{ marginTop: 14, width: "100%", border: "none", borderRadius: 16, background: C.secondary, color: "#fff", padding: "14px 16px", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>
+          See what you could save
         </button>
       )}
     </motion.div>
@@ -270,24 +269,24 @@ function SCard({ icon, name, value, vColor, desc, badge, bColor, delay = 0, lock
 }
 
 function FStep({ n, title, desc }) {
-  return (<div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}><div style={{ width: 30, height: 30, borderRadius: "50%", background: `${C.primary}10`, border: `1px solid ${C.primary}25`, color: C.primary, fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{n}</div><div><div style={{ fontSize: 15, fontWeight: 700, color: C.text, marginBottom: 2 }}>{title}</div><div style={{ fontSize: 13, color: C.textSec, lineHeight: 1.6 }}>{desc}</div></div></div>);
+  return (<div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}><div style={{ width: 36, height: 36, borderRadius: "50%", background: `${C.primary}14`, color: C.primary, fontSize: 15, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{n}</div><div><div style={{ fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 3 }}>{title}</div><div style={{ fontSize: 15, color: C.textSec, lineHeight: 1.6 }}>{desc}</div></div></div>);
 }
 
 function QA({ q, children, open: defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen);
   const panelId = `qa-panel-${q.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
   return (
-    <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 18, overflow: "hidden", boxShadow: shadow.sm }}>
+    <div style={{ background: C.surface, border: `2px solid ${C.border}`, borderRadius: 22, overflow: "hidden", boxShadow: shadow.sm }}>
       <button
         onClick={() => setOpen(!open)}
         aria-expanded={open}
         aria-controls={panelId}
-        style={{ width: "100%", padding: "20px 24px", fontSize: 16, fontWeight: 600, color: C.text, background: "none", border: "none", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, textAlign: "left", fontFamily: font.sans }}
+        style={{ width: "100%", padding: "22px 24px", minHeight: 56, fontSize: 17, fontWeight: 700, color: C.text, background: "none", border: "none", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, textAlign: "left", fontFamily: font.sans }}
       >
-        {q}<motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}><ChevronDown size={18} color={C.primary} /></motion.div>
+        {q}<motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ type: "spring", stiffness: 300, damping: 25 }}><ChevronDown size={20} color={C.primary} /></motion.div>
       </button>
       <AnimatePresence>
-        {open && (<motion.div id={panelId} initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} style={{ overflow: "hidden" }}><div style={{ padding: "0 22px 22px", borderTop: `1px solid ${C.border}`, paddingTop: 16, fontSize: 14, color: C.textSec, lineHeight: 1.75 }}>{children}</div></motion.div>)}
+        {open && (<motion.div id={panelId} initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ type: "spring", stiffness: 200, damping: 24 }} style={{ overflow: "hidden" }}><div style={{ padding: "0 24px 24px", borderTop: `1px solid ${C.border}`, paddingTop: 18, fontSize: 15, color: C.textSec, lineHeight: 1.75 }}>{children}</div></motion.div>)}
       </AnimatePresence>
     </div>
   );
@@ -355,25 +354,28 @@ RULES:
   if (teaser) {
     return (
       <motion.div initial={{ opacity: 0, y: 20, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.96 }}
-        style={{ position: "fixed", bottom: 96, right: 16, width: "min(400px, calc(100vw - 32px))", background: "rgba(15,15,22,0.92)", border: `1px solid ${C.border}`, borderRadius: 20, zIndex: 999, boxShadow: "0 24px 80px rgba(0,0,0,0.6)", overflow: "hidden" }}>
-        <div style={{ padding: "14px 18px", background: "linear-gradient(135deg, #059669, #34D399)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>AI Scenario Assistant</div>
-          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.14)", border: "none", borderRadius: 8, padding: 5, cursor: "pointer", display: "flex" }}><X size={16} color="#fff" /></button>
+        style={{ position: "fixed", bottom: 96, right: 16, width: "min(400px, calc(100vw - 32px))", background: C.surface, border: `2px solid ${C.border}`, borderRadius: 24, zIndex: 999, boxShadow: shadow.md, overflow: "hidden" }}>
+        <div style={{ padding: "16px 20px", background: `linear-gradient(135deg, ${C.secondary}, ${C.secondaryLight})`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 22 }}>🤖</span>
+            <span style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>AI Tax Assistant</span>
+          </div>
+          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: 10, width: 36, height: 36, cursor: "pointer", display: "grid", placeItems: "center" }}><X size={18} color="#fff" /></button>
         </div>
-        <div style={{ padding: 16, background: C.bg }}>
-          <div style={{ padding: "12px 14px", borderRadius: 12, border: `1px solid ${C.border}`, background: "#fff", color: C.textSec, fontSize: 13, lineHeight: 1.6 }}>
+        <div style={{ padding: 20 }}>
+          <div style={{ padding: "14px 16px", borderRadius: 16, border: `2px solid ${C.border}`, background: C.bg, color: C.textSec, fontSize: 15, lineHeight: 1.6 }}>
             Based on your {fmt(result.income)} income and {result.filingStatus.replace("_", " ")} filing status, you should consider optimizing your pre-tax strategy and...
           </div>
-          <div style={{ marginTop: 8, fontSize: 12, color: C.muted }}>Unlock the full personalized answer and unlimited scenario guidance in Pro + AI.</div>
+          <p style={{ marginTop: 10, fontSize: 14, color: C.muted }}>Unlock unlimited personalized tax guidance with Pro + AI.</p>
           {!isPro && (
-            <button onClick={onUpgrade} style={{ marginTop: 12, width: "100%", border: "none", borderRadius: 12, background: C.primary, color: "#fff", padding: "11px 12px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
-              Upgrade to Pro + AI ($9.99/mo)
+            <button onClick={onUpgrade} style={{ marginTop: 14, width: "100%", border: "none", borderRadius: 16, background: C.secondary, color: "#fff", padding: "16px", fontSize: 16, fontWeight: 800, cursor: "pointer", boxShadow: `0 4px 16px ${C.secondary}40` }}>
+              Go Pro + AI — $9.99/mo
             </button>
           )}
           {!isPro && remainingFree > 0 && (
-            <div style={{ marginTop: 8, fontSize: 11, color: C.textSec }}>
-              You still have {remainingFree} free AI session{remainingFree === 1 ? "" : "s"} after Full Access unlock.
-            </div>
+            <p style={{ marginTop: 10, fontSize: 14, color: C.textSec, textAlign: "center" }}>
+              {remainingFree} free session{remainingFree === 1 ? "" : "s"} left after Full Access unlock.
+            </p>
           )}
         </div>
       </motion.div>
@@ -382,30 +384,36 @@ RULES:
 
   return (
     <motion.div initial={{ opacity: 0, y: 20, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.96 }}
-      style={{ position: "fixed", bottom: 96, right: 16, width: "min(400px, calc(100vw - 32px))", height: "min(560px, calc(100vh - 140px))", background: "rgba(15,15,22,0.92)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)", border: `1px solid ${C.border}`, borderRadius: 20, display: "flex", flexDirection: "column", zIndex: 999, boxShadow: "0 24px 80px rgba(0,0,0,0.6)", overflow: "hidden" }}>
-      <div style={{ padding: "14px 18px", background: "linear-gradient(135deg, #059669, #34D399)", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-        <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}><Calculator size={16} color="#fff" /></div>
-        <div style={{ flex: 1 }}><div style={{ fontSize: 14, fontWeight: 700, color: "#fff", fontFamily: font.sans }}>{BRAND.name} Assistant</div><div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }}>Knows your full situation</div></div>
-        <button onClick={onClose} style={{ background: "rgba(255,255,255,0.1)", border: "none", borderRadius: 8, padding: 5, cursor: "pointer", display: "flex" }}><X size={16} color="#fff" /></button>
+      style={{ position: "fixed", bottom: 96, right: 16, width: "min(420px, calc(100vw - 32px))", height: "min(560px, calc(100vh - 140px))", background: C.surface, border: `2px solid ${C.border}`, borderRadius: 24, display: "flex", flexDirection: "column", zIndex: 999, boxShadow: shadow.md, overflow: "hidden" }}>
+      <div style={{ padding: "14px 18px", background: `linear-gradient(135deg, ${C.secondary}, ${C.secondaryLight})`, display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+        <span style={{ fontSize: 22 }}>🤖</span>
+        <div style={{ flex: 1 }}><div style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>{BRAND.name} AI</div><div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", fontWeight: 600 }}>Knows your full scenario</div></div>
+        <button onClick={onClose} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: 10, width: 36, height: 36, cursor: "pointer", display: "grid", placeItems: "center" }}><X size={18} color="#fff" /></button>
       </div>
-      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
-        {msgs.map((m, i) => (<div key={i} style={{ maxWidth: "85%", padding: "10px 14px", borderRadius: 14, fontSize: 13.5, lineHeight: 1.6, whiteSpace: "pre-wrap", fontFamily: font.sans, ...(m.role === "user" ? { background: C.primary, color: "#fff", alignSelf: "flex-end", borderBottomRightRadius: 4 } : { background: C.bg, color: C.text, alignSelf: "flex-start", borderBottomLeftRadius: 4, border: `1px solid ${C.border}` }) }}>{m.content}</div>))}
-        {loading && (<div style={{ display: "flex", gap: 4, padding: "10px 14px", background: C.bg, border: `1px solid ${C.border}`, borderRadius: 14, borderBottomLeftRadius: 4, alignSelf: "flex-start" }}>{[0, 1, 2].map(i => <motion.span key={i} animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.7, delay: i * 0.12 }} style={{ width: 6, height: 6, borderRadius: "50%", background: C.muted }} />)}</div>)}
+      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 12, background: C.bg }}>
+        {msgs.map((m, i) => (<div key={i} style={{ maxWidth: "85%", padding: "12px 16px", borderRadius: 18, fontSize: 15, lineHeight: 1.6, whiteSpace: "pre-wrap", fontFamily: font.sans, ...(m.role === "user" ? { background: C.secondary, color: "#fff", alignSelf: "flex-end", borderBottomRightRadius: 6 } : { background: C.surface, color: C.text, alignSelf: "flex-start", borderBottomLeftRadius: 6, border: `1px solid ${C.border}` }) }}>{m.content}</div>))}
+        {loading && (<div style={{ display: "flex", gap: 6, padding: "12px 16px", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 18, borderBottomLeftRadius: 6, alignSelf: "flex-start" }}>{[0, 1, 2].map(i => <motion.span key={i} animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.7, delay: i * 0.15 }} style={{ width: 8, height: 8, borderRadius: "50%", background: C.secondary }} />)}</div>)}
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 5, padding: "8px 14px", borderTop: `1px solid ${C.border}` }}>
-        {quickQ.map(q => <button key={q} onClick={() => send(q)} style={{ background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: 11.5, fontFamily: font.sans, padding: "4px 10px", borderRadius: 99, cursor: "pointer", whiteSpace: "nowrap" }}>{q}</button>)}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, padding: "10px 16px", borderTop: `1px solid ${C.border}` }}>
+        {quickQ.map(q => <button key={q} onClick={() => send(q)} style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, fontWeight: 600, fontFamily: font.sans, padding: "8px 14px", borderRadius: 99, cursor: "pointer", whiteSpace: "nowrap" }}>{q}</button>)}
       </div>
-      <div style={{ display: "flex", gap: 8, padding: "10px 14px", borderTop: `1px solid ${C.border}`, background: C.bg }}>
-        <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} placeholder="Ask anything…" style={{ flex: 1, background: "rgba(255,255,255,0.06)", border: `1px solid ${C.border}`, borderRadius: 10, padding: "9px 12px", fontSize: 13, fontFamily: font.sans, color: C.text, outline: "none" }} />
-        <button onClick={() => send()} style={{ width: 36, height: 36, borderRadius: 10, background: C.primary, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Send size={14} color="#fff" /></button>
+      <div style={{ display: "flex", gap: 10, padding: "12px 16px", borderTop: `1px solid ${C.border}`, background: C.surface }}>
+        <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} placeholder="Ask anything..." style={{ flex: 1, background: C.bg, border: `2px solid ${C.border}`, borderRadius: 14, padding: "12px 14px", fontSize: 15, fontFamily: font.sans, color: C.text, outline: "none" }} />
+        <button onClick={() => send()} style={{ width: 48, height: 48, borderRadius: 14, background: C.secondary, border: "none", cursor: "pointer", display: "grid", placeItems: "center" }}><Send size={18} color="#fff" /></button>
       </div>
     </motion.div>
   );
 }
 
 /* ═══════════════════════════════════════════
-   ONBOARDING FLOW
+   ONBOARDING FLOW — Full-screen immersive
    ═══════════════════════════════════════════ */
+const OB_BG = [
+  "linear-gradient(160deg, #e0f7f1 0%, #FFFDF7 50%, #f0e6ff 100%)",
+  "linear-gradient(160deg, #e8f0fe 0%, #FFFDF7 50%, #fce4ec 100%)",
+  "linear-gradient(160deg, #fff8e1 0%, #FFFDF7 50%, #e0f2f1 100%)",
+];
+
 function Onboarding({ onDone }) {
   const [step, setStep] = useState(0);
   const [income, setIncome] = useState(50000);
@@ -418,104 +426,123 @@ function Onboarding({ onDone }) {
   const [hasRetirement, setHasRetirement] = useState(false);
   const [hasHDHP, setHasHDHP] = useState(false);
 
-  const titles = [
-    { h: "What's your gross annual income?", p: "Your total income before any deductions — the number on your W-2 or 1099." },
-    { h: "What's your tax situation?", p: "This determines your tax brackets and standard deduction amount." },
-    { h: "Anything else we should explore?", p: "Optional — helps us identify tax scenarios we should model for." },
+  const stepMeta = [
+    { h: "How much do you make?", p: "Drag to set your gross annual income.", emoji: "💰" },
+    { h: "How do you file?", p: "Pick your filing status and dependents.", emoji: "📋" },
+    { h: "Anything else?", p: "Toggle what applies — we'll tailor your report.", emoji: "🔍" },
   ];
 
-  return (
-    <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, fontFamily: font.sans }}>
-      <div style={{ position: "fixed", inset: 0, background: `radial-gradient(ellipse 60% 50% at 20% 20%, rgba(52,211,153,0.08), transparent), radial-gradient(ellipse 50% 40% at 85% 80%, rgba(167,139,250,0.07), transparent)`, pointerEvents: "none" }} />
-      <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} style={{ width: "100%", maxWidth: 580, background: "rgba(18,18,26,0.92)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 24, boxShadow: "0 32px 80px rgba(0,0,0,0.6)", overflow: "hidden", position: "relative", zIndex: 1 }}>
-        <div style={{ height: 3, background: C.border }}><motion.div animate={{ width: `${((step + 1) / 3) * 100}%` }} transition={{ duration: 0.4 }} style={{ height: "100%", background: `linear-gradient(90deg, ${C.primary}, ${C.primaryLight})`, borderRadius: 3 }} /></div>
-        <div style={{ padding: "clamp(24px, 6vw, 44px) clamp(20px, 6vw, 36px) clamp(24px, 6vw, 36px)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 32 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg, #34D399, #059669)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(52,211,153,0.4)" }}><FileText size={16} color="#fff" /></div>
-            <span style={{ fontFamily: font.serif, fontSize: 18, color: C.primary }}>{BRAND.name}</span>
-            <span style={{ marginLeft: "auto", fontSize: 12, color: C.muted, fontWeight: 600 }}>Step {step + 1} / 3</span>
-          </div>
-          <h2 style={{ fontFamily: font.serif, fontSize: 28, color: C.text, marginBottom: 8, lineHeight: 1.2 }}>{titles[step].h}</h2>
-          <p style={{ color: C.textSec, fontSize: 15, marginBottom: 36, lineHeight: 1.6 }}>{titles[step].p}</p>
+  const next = () => step < 2 ? setStep(step + 1) : onDone({ income, status, deps, incomeType, stateCode, hasPenalty, hasStudentLoans, hasRetirement, hasHDHP });
 
-          <AnimatePresence mode="wait">
+  return (
+    <div style={{ minHeight: "100vh", background: OB_BG[step], fontFamily: font.sans, display: "flex", flexDirection: "column", transition: "background 0.5s ease" }}>
+      {/* Progress */}
+      <div style={{ padding: "20px 24px 0", maxWidth: 640, width: "100%", margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+          {step > 0 && <button onClick={() => setStep(step - 1)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex" }}><ArrowLeft size={22} color={C.text} /></button>}
+          <span style={{ fontWeight: 800, fontSize: 18, color: C.text }}>{BRAND.name}</span>
+          <span style={{ marginLeft: "auto", fontSize: 14, fontWeight: 700, color: C.muted }}>{step + 1} of 3</span>
+        </div>
+        <div style={{ display: "flex", gap: 6 }}>
+          {[0, 1, 2].map(i => (
+            <div key={i} style={{ flex: 1, height: 6, borderRadius: 99, background: i <= step ? C.primary : C.border, transition: "background 0.3s" }} />
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "40px 24px 24px", maxWidth: 640, width: "100%", margin: "0 auto" }}>
+        <AnimatePresence mode="wait">
+          <motion.div key={step} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>{stepMeta[step].emoji}</div>
+            <h1 style={{ fontSize: "clamp(28px, 7vw, 42px)", fontWeight: 800, color: C.text, lineHeight: 1.15, marginBottom: 8 }}>{stepMeta[step].h}</h1>
+            <p style={{ fontSize: 17, color: C.textSec, lineHeight: 1.55, marginBottom: 40 }}>{stepMeta[step].p}</p>
+
             {step === 0 && (
-              <motion.div key="s0" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
-                <div style={{ textAlign: "center", marginBottom: 28 }}>
-                  <span style={{ fontFamily: font.mono, fontSize: "clamp(36px, 10vw, 52px)", fontWeight: 700, color: C.primary, letterSpacing: "-0.02em" }}>{fmt(income)}</span>
-                  <div style={{ fontSize: 14, color: C.muted, marginTop: 6 }}>per year</div>
+              <>
+                <div style={{ textAlign: "center", marginBottom: 32 }}>
+                  <motion.span key={income} initial={{ scale: 0.95 }} animate={{ scale: 1 }} style={{ display: "inline-block", fontFamily: font.sans, fontWeight: 800, fontSize: "clamp(44px, 12vw, 68px)", color: C.primary, letterSpacing: "-0.03em", fontVariantNumeric: "tabular-nums" }}>{fmt(income)}</motion.span>
+                  <div style={{ fontSize: 16, color: C.muted, marginTop: 4, fontWeight: 600 }}>per year</div>
                 </div>
-                <div style={{ position: "relative", height: 10, background: C.border, borderRadius: 99, marginBottom: 12 }}>
+                <div style={{ position: "relative", height: 14, background: C.border, borderRadius: 99, marginBottom: 14 }}>
                   <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${((income - 15000) / (500000 - 15000)) * 100}%`, background: `linear-gradient(90deg, ${C.primary}, ${C.primaryLight})`, borderRadius: 99, transition: "width 0.02s" }} />
                   <input type="range" min={15000} max={500000} step={500} value={income} onChange={e => setIncome(+e.target.value)} aria-label="Gross annual income"
-                    style={{ position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", width: "100%", height: 32, WebkitAppearance: "none", appearance: "none", background: "transparent", outline: "none", cursor: "pointer", margin: 0 }} />
+                    style={{ position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", width: "100%", height: 40, WebkitAppearance: "none", appearance: "none", background: "transparent", outline: "none", cursor: "pointer", margin: 0 }} />
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.muted, fontWeight: 500 }}><span>$15K</span><span>$100K</span><span>$250K</span><span>$500K</span></div>
-                <div style={{ display: "flex", gap: 8, marginTop: 28 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: C.muted, fontWeight: 600 }}><span>$15K</span><span>$250K</span><span>$500K</span></div>
+                <div style={{ display: "flex", gap: 10, marginTop: 32 }}>
                   {["w2", "1099", "mixed"].map(t => (
-                    <button key={t} onClick={() => setIncomeType(t)} style={{ flex: 1, padding: "14px 0", borderRadius: 12, border: `2px solid ${incomeType === t ? C.primary : C.border}`, background: incomeType === t ? `${C.primary}08` : "transparent", cursor: "pointer", fontSize: 15, fontWeight: 700, fontFamily: font.sans, color: incomeType === t ? C.primary : C.textSec, transition: "all 0.15s" }}>
+                    <button key={t} onClick={() => setIncomeType(t)} style={{ flex: 1, padding: "16px 0", borderRadius: 16, border: `3px solid ${incomeType === t ? C.primary : C.border}`, background: incomeType === t ? `${C.primary}12` : C.surface, cursor: "pointer", fontSize: 16, fontWeight: 800, fontFamily: font.sans, color: incomeType === t ? C.primary : C.textSec, transition: "all 0.15s" }}>
                       {t === "w2" ? "W-2" : t === "1099" ? "1099" : "Both"}
                     </button>
                   ))}
                 </div>
                 <div style={{ marginTop: 28 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: C.textSec, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>State</div>
-                  <select value={stateCode} onChange={e => setStateCode(e.target.value)} style={{ width: "100%", padding: "16px 18px", borderRadius: 14, border: `1px solid ${C.border}`, fontSize: 17, fontFamily: font.sans, color: C.text, background: "rgba(255,255,255,0.08)", outline: "none", cursor: "pointer" }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: C.textSec, marginBottom: 8 }}>State</div>
+                  <select value={stateCode} onChange={e => setStateCode(e.target.value)} style={{ width: "100%", padding: "16px 18px", borderRadius: 16, border: `2px solid ${C.border}`, fontSize: 17, fontFamily: font.sans, color: C.text, background: C.surface, outline: "none", cursor: "pointer" }}>
                     {STATES.map(s => <option key={s.val} value={s.val}>{s.label}</option>)}
                   </select>
                 </div>
-              </motion.div>
+              </>
             )}
+
             {step === 1 && (
-              <motion.div key="s1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: 10 }}>
+              <>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: 12 }}>
                   {FILING.map(f => {
                     const Icon = f.icon; const sel = status === f.value; return (
-                      <button key={f.value} onClick={() => setStatus(f.value)} style={{ padding: "20px 18px", borderRadius: 16, border: `2px solid ${sel ? C.primary : C.border}`, background: sel ? `${C.primary}08` : C.surface, cursor: "pointer", textAlign: "left", transition: "all 0.15s" }}>
-                        <Icon size={22} color={sel ? C.primary : C.muted} style={{ marginBottom: 8 }} />
-                        <div style={{ fontSize: 14, fontWeight: 700, color: C.text, fontFamily: font.sans }}>{f.label}</div>
-                        <div style={{ fontSize: 12, color: C.textSec, marginTop: 3 }}>{f.sub}</div>
+                      <button key={f.value} onClick={() => setStatus(f.value)} style={{ padding: "22px 20px", borderRadius: 20, border: `3px solid ${sel ? C.primary : C.border}`, background: sel ? `${C.primary}10` : C.surface, cursor: "pointer", textAlign: "left", transition: "all 0.15s" }}>
+                        <div style={{ width: 48, height: 48, borderRadius: 14, background: sel ? `${C.primary}18` : `${C.muted}12`, display: "grid", placeItems: "center", marginBottom: 10 }}>
+                          <Icon size={24} color={sel ? C.primary : C.muted} />
+                        </div>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: C.text }}>{f.label}</div>
+                        <div style={{ fontSize: 14, color: C.textSec, marginTop: 4 }}>{f.sub}</div>
                       </button>
                     );
                   })}
                 </div>
-                <div style={{ marginTop: 24, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div><div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>Dependents</div><div style={{ fontSize: 12, color: C.textSec }}>Children or qualifying relatives</div></div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <button onClick={() => setDeps(Math.max(0, deps - 1))} style={{ width: 44, height: 44, borderRadius: 12, border: `1px solid ${C.border}`, background: C.surface, cursor: "pointer", fontSize: 24, color: C.textSec, fontFamily: font.sans }}>−</button>
-                    <span style={{ fontFamily: font.mono, fontSize: 22, fontWeight: 700, color: C.text, minWidth: 28, textAlign: "center" }}>{deps}</span>
-                    <button onClick={() => setDeps(Math.min(10, deps + 1))} style={{ width: 44, height: 44, borderRadius: 12, border: `1px solid ${C.border}`, background: C.surface, cursor: "pointer", fontSize: 24, color: C.textSec, fontFamily: font.sans }}>+</button>
+                <div style={{ marginTop: 28, display: "flex", alignItems: "center", justifyContent: "space-between", background: C.surface, borderRadius: 20, padding: "16px 20px", border: `2px solid ${C.border}` }}>
+                  <div><div style={{ fontSize: 16, fontWeight: 700, color: C.text }}>Dependents</div><div style={{ fontSize: 14, color: C.textSec }}>Children or qualifying relatives</div></div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                    <button onClick={() => setDeps(Math.max(0, deps - 1))} style={{ width: 48, height: 48, borderRadius: 14, border: `2px solid ${C.border}`, background: C.surface, cursor: "pointer", fontSize: 24, fontWeight: 700, color: C.textSec, fontFamily: font.sans, display: "grid", placeItems: "center" }}>−</button>
+                    <span style={{ fontFamily: font.sans, fontSize: 28, fontWeight: 800, color: C.text, minWidth: 32, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>{deps}</span>
+                    <button onClick={() => setDeps(Math.min(10, deps + 1))} style={{ width: 48, height: 48, borderRadius: 14, border: `2px solid ${C.border}`, background: C.surface, cursor: "pointer", fontSize: 24, fontWeight: 700, color: C.textSec, fontFamily: font.sans, display: "grid", placeItems: "center" }}>+</button>
                   </div>
                 </div>
-              </motion.div>
+              </>
             )}
+
             {step === 2 && (
-              <motion.div key="s2" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
+              <div style={{ display: "grid", gap: 14 }}>
                 {[
-                  { label: "I have a late filing penalty", sub: "We'll show you how to potentially eliminate it", state: hasPenalty, set: setHasPenalty, color: C.danger },
-                  { label: "I have student loans", sub: "Up to $2,500 interest may be deductible", state: hasStudentLoans, set: setHasStudentLoans, color: C.info },
-                  { label: "I have a retirement account (401k/IRA)", sub: "Contributions may reduce your taxable income", state: hasRetirement, set: setHasRetirement, color: C.success },
-                  { label: "I have a high-deductible health plan", sub: "You may qualify for HSA tax savings", state: hasHDHP, set: setHasHDHP, color: C.warning },
+                  { label: "Late filing penalty", sub: "We'll show how to potentially eliminate it", state: hasPenalty, set: setHasPenalty, color: C.danger, icon: "⚠️" },
+                  { label: "Student loans", sub: "Up to $2,500 interest may be deductible", state: hasStudentLoans, set: setHasStudentLoans, color: C.info, icon: "🎓" },
+                  { label: "Retirement account (401k/IRA)", sub: "Contributions may reduce taxable income", state: hasRetirement, set: setHasRetirement, color: C.success, icon: "💼" },
+                  { label: "High-deductible health plan", sub: "You may qualify for HSA tax savings", state: hasHDHP, set: setHasHDHP, color: C.warning, icon: "🏥" },
                 ].map((item, i) => (
-                  <label key={i} style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "18px 20px", borderRadius: 16, border: `2px solid ${item.state ? item.color + "40" : C.border}`, background: item.state ? item.color + "06" : "transparent", cursor: "pointer", marginBottom: 12, transition: "all 0.15s" }}>
-                    <input type="checkbox" checked={item.state} onChange={e => item.set(e.target.checked)} style={{ width: 24, height: 24, marginTop: 2, accentColor: item.color, flexShrink: 0 }} />
-                    <div><div style={{ fontSize: 15, fontWeight: 600, color: C.text }}>{item.label}</div><div style={{ fontSize: 13, color: C.textSec, marginTop: 2 }}>{item.sub}</div></div>
+                  <label key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "18px 20px", borderRadius: 18, border: `3px solid ${item.state ? item.color : C.border}`, background: item.state ? item.color + "0A" : C.surface, cursor: "pointer", transition: "all 0.15s" }}>
+                    <span style={{ fontSize: 28, flexShrink: 0 }}>{item.icon}</span>
+                    <div style={{ flex: 1 }}><div style={{ fontSize: 16, fontWeight: 700, color: C.text }}>{item.label}</div><div style={{ fontSize: 14, color: C.textSec, marginTop: 2 }}>{item.sub}</div></div>
+                    <div style={{ width: 52, height: 30, borderRadius: 99, background: item.state ? item.color : C.border, position: "relative", flexShrink: 0, transition: "background 0.2s", cursor: "pointer" }}>
+                      <motion.div animate={{ x: item.state ? 24 : 2 }} transition={{ type: "spring", stiffness: 500, damping: 30 }} style={{ position: "absolute", top: 2, width: 26, height: 26, borderRadius: "50%", background: "#fff", boxShadow: shadow.sm }} />
+                    </div>
+                    <input type="checkbox" checked={item.state} onChange={e => item.set(e.target.checked)} style={{ display: "none" }} />
                   </label>
                 ))}
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 36, gap: 12 }}>
-            {step > 0 ? (<button onClick={() => setStep(step - 1)} style={{ padding: "14px 26px", borderRadius: 14, border: `1px solid ${C.border}`, background: C.surface, cursor: "pointer", fontSize: 15, fontWeight: 700, color: C.textSec, fontFamily: font.sans, display: "flex", alignItems: "center", gap: 8 }}><ArrowLeft size={16} /> Back</button>) : <div />}
-            <button onClick={() => step < 2 ? setStep(step + 1) : onDone({ income, status, deps, incomeType, stateCode, hasPenalty, hasStudentLoans, hasRetirement, hasHDHP })}
-              style={{ padding: "14px 30px", borderRadius: 14, border: "none", background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLight})`, color: "#fff", cursor: "pointer", fontSize: 15, fontWeight: 700, fontFamily: font.sans, display: "flex", alignItems: "center", gap: 8, boxShadow: `0 4px 16px ${C.primary}40` }}>
-              {step < 2 ? <>Continue <ArrowRight size={16} /></> : <>See My Breakdown <Sparkles size={16} /></>}
-            </button>
-          </div>
-        </div>
-        <div style={{ padding: "14px 36px", background: "rgba(0,0,0,0.2)", borderTop: `1px solid ${C.border}`, fontSize: 11, color: C.muted, lineHeight: 1.6 }}>{DISCLAIMER}</div>
-      </motion.div>
+      {/* Bottom CTA */}
+      <div style={{ padding: "16px 24px 28px", maxWidth: 640, width: "100%", margin: "0 auto" }}>
+        <button onClick={next}
+          style={{ width: "100%", padding: "18px 24px", borderRadius: 18, border: "none", background: C.primary, color: "#fff", cursor: "pointer", fontSize: 18, fontWeight: 800, fontFamily: font.sans, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, boxShadow: `0 6px 20px ${C.primary}40`, transition: "transform 0.12s, box-shadow 0.12s" }}>
+          {step < 2 ? <>Continue <ArrowRight size={20} /></> : <>Show me my breakdown <Sparkles size={20} /></>}
+        </button>
+        <p style={{ textAlign: "center", marginTop: 14, fontSize: 13, color: C.muted, lineHeight: 1.5 }}>{DISCLAIMER}</p>
+      </div>
     </div>
   );
 }
@@ -586,48 +613,52 @@ export default function TaxedApp({ session }) {
 
   useEffect(() => {
     const syncEntitlement = async () => {
-      if (!userId) {
-        setEntitlement({ full_access: false, pro_ai: false, status: "inactive" });
-        return;
-      }
-      const data = await loadEntitlement(userId);
-      if (data) setEntitlement(data);
+      try {
+        if (!userId) {
+          setEntitlement({ full_access: false, pro_ai: false, status: "inactive" });
+          return;
+        }
+        const data = await loadEntitlement(userId);
+        if (data) setEntitlement(data);
+      } catch { /* ignore */ }
     };
     syncEntitlement();
   }, [userId]);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const checkoutState = params.get("checkout");
-    const sessionId = params.get("session_id");
-    if (!sessionId || checkoutState !== "success") return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const checkoutState = params.get("checkout");
+      const sessionId = params.get("session_id");
+      if (!sessionId || checkoutState !== "success") return;
 
-    const verify = async () => {
-      try {
-        const data = await getCheckoutStatus(sessionId);
-        if (!data.active) return;
-        setEntitlement({
-          full_access: true,
-          pro_ai: data.plan === "pro",
-          status: "active",
-        });
-        localStorage.setItem("taxed_checkout_session_id", sessionId);
-        setCheckoutSessionId(sessionId);
-        setCheckoutNotice(
-          userId
-            ? "Payment confirmed. Your access is active."
-            : "Payment confirmed. Create or log into your account to protect your purchase."
-        );
-        if (data.plan === "pro") {
-          localStorage.setItem("taxed_ai_free_uses", "0");
-          setAiFreeUses(0);
+      const verify = async () => {
+        try {
+          const data = await getCheckoutStatus(sessionId);
+          if (!data.active) return;
+          setEntitlement({
+            full_access: true,
+            pro_ai: data.plan === "pro",
+            status: "active",
+          });
+          localStorage.setItem("taxed_checkout_session_id", sessionId);
+          setCheckoutSessionId(sessionId);
+          setCheckoutNotice(
+            userId
+              ? "Payment confirmed. Your access is active."
+              : "Payment confirmed. Create or log into your account to protect your purchase."
+          );
+          if (data.plan === "pro") {
+            localStorage.setItem("taxed_ai_free_uses", "0");
+            setAiFreeUses(0);
+          }
+        } catch (error) {
+          setCheckoutNotice(error.message || "Could not verify checkout status.");
         }
-      } catch (error) {
-        setCheckoutNotice(error.message || "Could not verify checkout status.");
-      }
-    };
+      };
 
-    verify();
+      verify();
+    } catch { /* ignore */ }
   }, [userId]);
 
   useEffect(() => {
@@ -642,9 +673,7 @@ export default function TaxedApp({ session }) {
           status: "active",
         }));
         setCheckoutNotice("Purchase linked to your account.");
-      } catch {
-        // Ignore silent claim failures; user can still continue with local unlock.
-      }
+      } catch { /* ignore */ }
     };
     claim();
   }, [userId, checkoutSessionId]);
@@ -800,45 +829,45 @@ export default function TaxedApp({ session }) {
   ];
 
   return (
-    <div className="calculator-page" style={{ minHeight: "100vh", background: C.bg, fontFamily: font.sans, paddingBottom: 100 }}>
-      <div style={{ position: "fixed", inset: 0, background: `radial-gradient(ellipse 60% 50% at 15% 10%, rgba(52,211,153,0.08), transparent), radial-gradient(ellipse 50% 40% at 85% 85%, rgba(167,139,250,0.07), transparent)`, pointerEvents: "none", zIndex: 0 }} />
-      <div style={{ position: "fixed", inset: 0, backgroundImage: `linear-gradient(rgba(52,211,153,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(52,211,153,0.03) 1px, transparent 1px)`, backgroundSize: "52px 52px", pointerEvents: "none", zIndex: 0 }} />
-
-      <div ref={reportRef} className="calculator-report" style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 20px", position: "relative", zIndex: 1 }}>
-        <motion.div initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+    <div className="calculator-page" style={{ minHeight: "100vh", background: C.bg, fontFamily: font.sans, paddingBottom: 120 }}>
+      <div ref={reportRef} className="calculator-report" style={{ maxWidth: 960, margin: "0 auto", padding: "36px 24px", position: "relative", zIndex: 1 }}>
+        <motion.div initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 24 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ width: 34, height: 34, borderRadius: 9, background: "linear-gradient(135deg, #34D399, #059669)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(52,211,153,0.35)" }}><FileText size={16} color="#fff" /></div>
-              <span style={{ fontFamily: font.serif, fontSize: 19, color: C.primary }}>{BRAND.name}</span>
+              <span style={{ fontWeight: 800, fontSize: 20, color: C.text }}>{BRAND.name}</span>
             </div>
-            <button onClick={generatePDF} style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 18px", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 99, fontSize: 14, fontWeight: 700, color: C.text, cursor: "pointer", boxShadow: shadow.sm, transition: "all 0.2s" }} onMouseOver={e => e.currentTarget.style.boxShadow = shadow.md} onMouseOut={e => e.currentTarget.style.boxShadow = shadow.sm}>
-              <Download size={14} /> Export PDF for CPA
-            </button>
-            {userId && (
-              <button onClick={saveScenarioToCloud} disabled={cloudLoading} style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 18px", background: C.surface, border: `1px solid ${C.border}`, borderRadius: 99, fontSize: 14, fontWeight: 700, color: C.text, cursor: cloudLoading ? "wait" : "pointer", boxShadow: shadow.sm, transition: "all 0.2s", opacity: cloudLoading ? 0.75 : 1 }}>
-                <CloudUpload size={14} /> {cloudLoading ? "Saving..." : "Save to Cloud"}
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button onClick={generatePDF} style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 20px", background: C.surface, border: `2px solid ${C.border}`, borderRadius: 14, fontSize: 15, fontWeight: 700, color: C.text, cursor: "pointer" }}>
+                <Download size={16} /> Export PDF
               </button>
-            )}
+              {userId && (
+                <button onClick={saveScenarioToCloud} disabled={cloudLoading} style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 20px", background: C.surface, border: `2px solid ${C.border}`, borderRadius: 14, fontSize: 15, fontWeight: 700, color: C.text, cursor: cloudLoading ? "wait" : "pointer", opacity: cloudLoading ? 0.7 : 1 }}>
+                  <CloudUpload size={16} /> {cloudLoading ? "Saving..." : "Save"}
+                </button>
+              )}
+            </div>
           </div>
           {cloudMessage && (
-            <div style={{ marginBottom: 10, fontSize: 13, color: cloudMessage.startsWith("Save failed") ? C.danger : C.success }}>
+            <div style={{ marginBottom: 12, fontSize: 15, fontWeight: 600, color: cloudMessage.startsWith("Save failed") ? C.danger : C.success }}>
               {cloudMessage}
             </div>
           )}
-          <div style={{ fontSize: 12, fontWeight: 700, color: C.accent, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>Tax Summary · {short(income)} · {stateLabel} · {statusLabel}</div>
-          <h1 style={{ fontFamily: font.serif, fontSize: "clamp(30px, 5vw, 46px)", color: C.text, lineHeight: 1.12, marginBottom: 8 }}>Your Tax Situation,<br />Broken Down.</h1>
-          <p style={{ color: C.textSec, fontSize: 15, lineHeight: 1.6 }}>Drag the slider — every number updates instantly</p>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: C.primary, background: `${C.primary}12`, padding: "5px 12px", borderRadius: 99 }}>{short(income)} · {stateLabel} · {statusLabel}</span>
+          </div>
+          <h1 style={{ fontFamily: font.sans, fontWeight: 800, fontSize: "clamp(28px, 5vw, 40px)", color: C.text, lineHeight: 1.15, marginBottom: 8 }}>Your tax breakdown</h1>
+          <p style={{ color: C.textSec, fontSize: 17, lineHeight: 1.6 }}>Drag the slider to explore. Every number updates instantly.</p>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{ background: `${C.info}10`, border: `1px solid ${C.info}25`, borderRadius: 14, padding: "18px 22px", display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 36 }}>
-          <div style={{ width: 34, height: 34, borderRadius: "50%", background: `${C.info}15`, color: C.info, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Shield size={16} /></div>
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{ background: `${C.info}0C`, border: `2px solid ${C.info}20`, borderRadius: 18, padding: "16px 20px", display: "flex", gap: 14, alignItems: "center", marginBottom: 36 }}>
+          <span style={{ fontSize: 24, flexShrink: 0 }}>📚</span>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 4 }}>Educational Context Only</div>
-            <div style={{ fontSize: 13, color: C.textSec, lineHeight: 1.5 }}>Taxed is a tool for exploring strategies, identifying risks, and modeling scenarios. This is not a filing service or official tax advice.</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.text, marginBottom: 2 }}>Educational context only</div>
+            <div style={{ fontSize: 15, color: C.textSec, lineHeight: 1.5 }}>This is a modeling tool, not a filing service or tax advice.</div>
           </div>
         </motion.div>
 
-        <Sect>Income & Tax at a Glance</Sect>
+        <Sect icon="📊">Income & Tax at a Glance</Sect>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: 18 }}>
           <KPI label="Gross Income" value={fmt(income)} color={C.info} desc="Drag the slider to explore" icon={DollarSign}>
             <div style={{ marginTop: 16, position: "relative" }}>
@@ -847,7 +876,7 @@ export default function TaxedApp({ session }) {
                 <input type="range" min={15000} max={500000} step={500} value={income} onChange={e => setIncome(+e.target.value)} aria-label="Income"
                   style={{ position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", width: "100%", height: 32, WebkitAppearance: "none", appearance: "none", background: "transparent", outline: "none", cursor: "pointer", margin: 0 }} />
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 11, color: C.muted, fontWeight: 500 }}><span>$15K</span><span>$150K</span><span>$500K</span></div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 14, color: C.muted, fontWeight: 600 }}><span>$15K</span><span>$150K</span><span>$500K</span></div>
             </div>
           </KPI>
 
@@ -861,18 +890,18 @@ export default function TaxedApp({ session }) {
                     <div style={{ height: 1, background: C.border, margin: "8px 0" }} />
                     <Brackets title={`${stateLabel} State Tax`} brackets={r.st.taxByBracket} color="#8B5CF6" total={r.st.incomeTax} income={income} />
                     <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 12 }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 99, background: `${C.info}10`, color: C.info, border: `1px solid ${C.info}25` }}>SDI 0.9%</span>
+                      <span style={{ fontSize: 13, fontWeight: 800, padding: "4px 10px", borderRadius: 99, background: `${C.info}14`, color: C.info }}>SDI 0.9%</span>
                       <span style={{ flex: 1, color: C.textSec }}>State Disability Insurance</span>
-                      <span style={{ fontFamily: font.mono, fontWeight: 600 }}>{fmt(r.st.sdi)}</span>
+                      <span style={{ fontFamily: font.sans, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>{fmt(r.st.sdi)}</span>
                     </div>
                     {r.st.mentalHealthSurcharge > 0 && (<div style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", fontSize: 12 }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 99, background: `${C.danger}10`, color: C.danger, border: `1px solid ${C.danger}25` }}>MHS 1%</span>
+                      <span style={{ fontSize: 13, fontWeight: 800, padding: "4px 10px", borderRadius: 99, background: `${C.danger}14`, color: C.danger }}>MHS 1%</span>
                       <span style={{ flex: 1, color: C.textSec }}>Mental Health Surcharge (&gt;$1M)</span>
-                      <span style={{ fontFamily: font.mono, fontWeight: 600 }}>{fmt(r.st.mentalHealthSurcharge)}</span>
+                      <span style={{ fontFamily: font.sans, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>{fmt(r.st.mentalHealthSurcharge)}</span>
                     </div>)}
                     <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 12, marginTop: 8, borderTop: `2px solid ${C.border}` }}>
                       <span style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Total Tax Owed</span>
-                      <span style={{ fontFamily: font.serif, fontSize: 20, color: C.text }}>{fmt(r.combined.totalTax)}</span>
+                      <span style={{ fontFamily: font.sans, fontWeight: 800, fontSize: 22, color: C.text }}>{fmt(r.combined.totalTax)}</span>
                     </div>
                   </div>
                 </motion.div>
@@ -887,10 +916,9 @@ export default function TaxedApp({ session }) {
           </KPI>
         </div>
 
-        <Sect>Where Your Money Goes</Sect>
+        <Sect icon="💸">Where Your Money Goes</Sect>
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}
-          style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: "24px 28px", boxShadow: shadow.card, position: "relative", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${C.info}, #8B5CF6)`, opacity: 0.7 }} />
+          style={{ background: C.surface, border: `2px solid ${C.border}`, borderRadius: 24, padding: "28px 24px", boxShadow: shadow.card, overflow: "hidden" }}>
           <Bar label="Gross Income" amount={fmt(income)} pct={100} color={`linear-gradient(90deg, ${C.info}, #8B5CF6)`} delay={0.1} />
           <Bar label="Federal Standard Deduction" amount={"−" + fmt(r.fed.standardDeduction)} amtColor={C.success} pct={income > 0 ? r.fed.standardDeduction / income * 100 : 0} color={C.success} delay={0.15} />
           <Bar label="Federal Taxable Income" amount={fmt(r.fed.taxableIncome)} amtColor={C.accent} pct={income > 0 ? r.fed.taxableIncome / income * 100 : 0} color={`linear-gradient(90deg, ${C.accent}, #F97316)`} delay={0.2} />
@@ -902,15 +930,15 @@ export default function TaxedApp({ session }) {
         <div style={{ height: 1, background: C.border, margin: "44px 0" }} />
 
         {hasPenalty && r.penalty && (<>
-          <Sect>Late Filing Penalty & How to Fix It</Sect>
+          <Sect icon="⚠️">Late Filing Penalty & How to Fix It</Sect>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 14 }}>
             <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: 24, boxShadow: shadow.card, position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: C.danger, opacity: 0.7 }} />
-              <div style={{ fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>The Problem</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: C.muted, marginBottom: 14 }}>The Problem</div>
               <div style={{ background: `${C.danger}06`, border: `1px solid ${C.danger}18`, borderRadius: 12, padding: 18, marginBottom: 14 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
-                  <span style={{ background: `${C.danger}10`, color: C.danger, fontSize: 11, fontWeight: 700, padding: "5px 12px", borderRadius: 99, border: `1px solid ${C.danger}25` }}>⚠ Late Filing Penalty</span>
-                  <span style={{ fontFamily: font.serif, fontSize: 26, color: C.danger }}>{fmt(r.penalty.estimatedPenalty)}</span>
+                  <span style={{ background: `${C.danger}12`, color: C.danger, fontSize: 14, fontWeight: 800, padding: "6px 14px", borderRadius: 99 }}>⚠ Late Filing Penalty</span>
+                  <span style={{ fontFamily: font.sans, fontWeight: 800, fontSize: 26, color: C.danger }}>{fmt(r.penalty.estimatedPenalty)}</span>
                 </div>
                 <p style={{ fontSize: 14, color: C.textSec, lineHeight: 1.7, marginBottom: 10 }}>IRS charges 5% of unpaid tax per month (up to 25%). With ≈{fmt(r.combined.totalTax)} owed and ~5 months late, {fmt(r.penalty.estimatedPenalty)} is in range.</p>
                 <p style={{ fontSize: 14, color: C.danger, fontWeight: 700 }}>Your CPA filed late — this is on them, not you.</p>
@@ -919,7 +947,7 @@ export default function TaxedApp({ session }) {
             </motion.div>
             <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: 24, boxShadow: shadow.card, position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: C.primary, opacity: 0.7 }} />
-              <div style={{ fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 18 }}>First-Time Abatement (FTA)</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: C.muted, marginBottom: 18 }}>First-Time Abatement (FTA)</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <FStep n={1} title="Check Eligibility" desc="No penalties in the 3 tax years before the penalty year. All returns filed. Tax paid or in arrangement." />
                 <FStep n={2} title="Call or Write the IRS" desc="Phone is fastest — often approved same call. Use Form 843 by mail if penalty is already paid." />
@@ -929,8 +957,8 @@ export default function TaxedApp({ session }) {
               <div style={{ marginTop: 18, padding: "14px 16px", background: `${C.primary}06`, border: `1px solid ${C.primary}12`, borderRadius: 10 }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: C.primary, marginBottom: 8 }}>3-Year Lookback (from penalty year 2024)</div>
                 <div style={{ display: "flex", gap: 8 }}>
-                  {r.penalty.lookbackYears.map(y => (<div key={y.year} style={{ flex: 1, textAlign: "center", padding: "8px 0", background: C.surface, borderRadius: 8, border: `1px solid ${C.border}` }}><div style={{ fontFamily: font.mono, fontSize: 14, fontWeight: 700, color: C.primary }}>{y.year}</div><div style={{ fontSize: 10, color: C.success, fontWeight: 700, marginTop: 2 }}>Must be clean</div></div>))}
-                  <div style={{ flex: 1, textAlign: "center", padding: "8px 0", background: `${C.accent}08`, borderRadius: 8, border: `1px solid ${C.accent}20` }}><div style={{ fontFamily: font.mono, fontSize: 14, fontWeight: 700, color: C.accentDark }}>2024</div><div style={{ fontSize: 10, color: C.danger, fontWeight: 700, marginTop: 2 }}>Penalty year</div></div>
+                  {r.penalty.lookbackYears.map(y => (<div key={y.year} style={{ flex: 1, textAlign: "center", padding: "8px 0", background: C.surface, borderRadius: 8, border: `1px solid ${C.border}` }}><div style={{ fontFamily: font.sans, fontSize: 15, fontWeight: 800, color: C.primary, fontVariantNumeric: "tabular-nums" }}>{y.year}</div><div style={{ fontSize: 12, color: C.success, fontWeight: 700, marginTop: 2 }}>Must be clean</div></div>))}
+                  <div style={{ flex: 1, textAlign: "center", padding: "8px 0", background: `${C.accent}08`, borderRadius: 8, border: `1px solid ${C.accent}20` }}><div style={{ fontFamily: font.sans, fontSize: 15, fontWeight: 800, color: C.accentDark, fontVariantNumeric: "tabular-nums" }}>2024</div><div style={{ fontSize: 12, color: C.danger, fontWeight: 700, marginTop: 2 }}>Penalty year</div></div>
                 </div>
               </div>
             </motion.div>
@@ -938,18 +966,18 @@ export default function TaxedApp({ session }) {
           <div style={{ height: 1, background: C.border, margin: "44px 0" }} />
         </>)}
 
-        <Sect>Potential Savings</Sect>
+        <Sect icon="💡">Potential Savings</Sect>
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           style={{ background: `linear-gradient(135deg, ${C.primary}06, ${C.info}06)`, border: `1px solid ${C.primary}15`, borderRadius: 16, padding: "22px 26px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 18, marginBottom: 20 }}>
-          <div><div style={{ fontFamily: font.serif, fontSize: 17, color: C.text }}>💡 If You Take Action</div><div style={{ fontSize: 13, color: C.textSec, marginTop: 4 }}>Credits + abatement + deductions</div></div>
+          <div><div style={{ fontFamily: font.sans, fontWeight: 800, fontSize: 18, color: C.text }}>💡 If You Take Action</div><div style={{ fontSize: 15, color: C.textSec, marginTop: 4 }}>Credits + abatement + deductions</div></div>
           <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-            {hasPenalty && r.penalty && (<div style={{ textAlign: "right" }}><div style={{ fontSize: 10, color: C.muted, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginBottom: 2 }}>FTA Saves</div><div style={{ fontFamily: font.serif, fontSize: 20, color: C.success }}>{fmt(r.penalty.ftaSavings)}</div></div>)}
-            <div style={{ textAlign: "right" }}><div style={{ fontSize: 10, color: C.muted, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginBottom: 2 }}>EITC</div><div style={{ fontFamily: font.serif, fontSize: 20, color: r.eitc.eligible ? C.accent : C.muted }}>{r.eitc.eligible ? "+" + fmt(r.eitc.amount) : "N/A"}</div></div>
-            <div style={{ textAlign: "right" }}><div style={{ fontSize: 10, color: C.muted, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginBottom: 2 }}>Max Savings</div><div style={{ fontFamily: font.serif, fontSize: 20, color: C.text }}>≈{fmt(maxSave)}</div></div>
+            {hasPenalty && r.penalty && (<div style={{ textAlign: "right" }}><div style={{ fontSize: 12, color: C.muted, fontWeight: 700, marginBottom: 2 }}>FTA Saves</div><div style={{ fontFamily: font.sans, fontWeight: 800, fontSize: 22, color: C.success }}>{fmt(r.penalty.ftaSavings)}</div></div>)}
+            <div style={{ textAlign: "right" }}><div style={{ fontSize: 12, color: C.muted, fontWeight: 700, marginBottom: 2 }}>EITC</div><div style={{ fontFamily: font.sans, fontWeight: 800, fontSize: 22, color: r.eitc.eligible ? C.accent : C.muted }}>{r.eitc.eligible ? "+" + fmt(r.eitc.amount) : "N/A"}</div></div>
+            <div style={{ textAlign: "right" }}><div style={{ fontSize: 12, color: C.muted, fontWeight: 700, marginBottom: 2 }}>Max Savings</div><div style={{ fontFamily: font.sans, fontWeight: 800, fontSize: 22, color: C.text }}>≈{fmt(maxSave)}</div></div>
           </div>
         </motion.div>
 
-        <Sect>Savings & Credits — Opportunity Map</Sect>
+        <Sect icon="🎯">Savings & Credits — Opportunity Map</Sect>
         <div style={{ marginBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           <div style={{ fontSize: 14, color: C.text, fontWeight: 700 }}>We found {opportunities.length} opportunities in your profile.</div>
           {!hasFullAccess && (
@@ -999,7 +1027,7 @@ export default function TaxedApp({ session }) {
 
         <div style={{ height: 1, background: C.border, margin: "44px 0" }} />
 
-        <Sect>Your Questions, Answered</Sect>
+        <Sect icon="❓">Your Questions, Answered</Sect>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <QA q="Should I use the FTA waiver to get rid of a penalty?" open={hasPenalty}>
             <p><strong style={{ color: C.success }}>Yes — 100%.</strong> It's IRS-sanctioned with zero downside. $600 back for a 10-minute call.</p>
@@ -1029,21 +1057,21 @@ export default function TaxedApp({ session }) {
         </div>
 
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          style={{ marginTop: 44, padding: 26, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, boxShadow: shadow.card }}>
-          <div style={{ fontFamily: font.serif, fontSize: 18, color: C.text, marginBottom: 20 }}>⚡ Your Next {actionItems.length} Actions</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          style={{ marginTop: 44, padding: 28, background: C.surface, border: `2px solid ${C.border}`, borderRadius: 24, boxShadow: shadow.card }}>
+          <div style={{ fontFamily: font.sans, fontWeight: 800, fontSize: 20, color: C.text, marginBottom: 20 }}>⚡ Your Next {actionItems.length} Actions</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {actionItems.map((a, i) => (
-              <div key={a.id} style={{ display: "flex", gap: 14, alignItems: "flex-start", fontSize: 14, color: C.textSec, lineHeight: 1.65, opacity: actions[a.id] ? 0.5 : 1, transition: "opacity 0.2s" }}>
-                <button onClick={() => toggleAction(a.id)} aria-label={`Mark action ${i + 1} complete`} style={{ width: 26, height: 26, borderRadius: "50%", flexShrink: 0, marginTop: 1, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s", background: actions[a.id] ? C.primary : `${C.primary}08`, border: `2px solid ${actions[a.id] ? C.primary : C.primary + "30"}` }}>
-                  {actions[a.id] ? <Check size={13} color="#fff" /> : <span style={{ fontFamily: font.mono, fontSize: 11, fontWeight: 700, color: C.primary }}>{i + 1}</span>}
-                </button>
+              <div key={a.id} style={{ display: "flex", gap: 14, alignItems: "flex-start", fontSize: 15, color: C.textSec, lineHeight: 1.65, opacity: actions[a.id] ? 0.45 : 1, transition: "opacity 0.2s" }}>
+                <motion.button onClick={() => toggleAction(a.id)} whileTap={{ scale: 0.85 }} aria-label={`Mark action ${i + 1} complete`} style={{ width: 34, height: 34, borderRadius: "50%", flexShrink: 0, marginTop: 1, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s", background: actions[a.id] ? C.primary : `${C.primary}10`, border: `2px solid ${actions[a.id] ? C.primary : C.primary + "30"}` }}>
+                  {actions[a.id] ? <Check size={16} color="#fff" /> : <span style={{ fontFamily: font.sans, fontSize: 14, fontWeight: 800, color: C.primary }}>{i + 1}</span>}
+                </motion.button>
                 <span style={{ textDecoration: actions[a.id] ? "line-through" : "none" }}>{a.text}</span>
               </div>
             ))}
           </div>
         </motion.div>
 
-        <div style={{ marginTop: 40, padding: "14px 18px", background: `${C.primary}04`, border: `1px solid ${C.primary}10`, borderRadius: 12, fontSize: 11, color: C.muted, lineHeight: 1.7 }}>
+        <div style={{ marginTop: 40, padding: "16px 20px", background: `${C.primary}06`, border: `2px solid ${C.primary}10`, borderRadius: 16, fontSize: 13, color: C.muted, lineHeight: 1.7 }}>
           <strong style={{ color: C.textSec }}>Disclaimer:</strong> {DISCLAIMER}
         </div>
         {!userId && checkoutSessionId && (
@@ -1064,74 +1092,74 @@ export default function TaxedApp({ session }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            style={{ position: "fixed", inset: 0, background: "rgba(10,18,28,0.55)", backdropFilter: "blur(4px)", zIndex: 1100, display: "grid", placeItems: "center", padding: 14 }}
+            style={{ position: "fixed", inset: 0, background: "rgba(26,26,46,0.35)", backdropFilter: "blur(8px)", zIndex: 1100, display: "grid", placeItems: "center", padding: 16 }}
           >
             <motion.div
-              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.98 }}
-              style={{ width: "min(860px, 100%)", background: "#fff", borderRadius: 20, border: `1px solid ${C.border}`, boxShadow: shadow.md, padding: "22px 22px 18px" }}
+              exit={{ opacity: 0, y: 16, scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              style={{ width: "min(520px, 100%)", background: C.surface, borderRadius: 28, border: `2px solid ${C.border}`, boxShadow: shadow.md, padding: "32px 28px 28px" }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", marginBottom: 8 }}>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: C.primary, textTransform: "uppercase", letterSpacing: "0.08em" }}>Full X-Ray Unlocked</div>
-                  <h3 style={{ margin: "6px 0 0", fontFamily: font.serif, fontSize: 30, color: C.text }}>Unlock your full tax prescription</h3>
-                </div>
-                <button onClick={() => setPaywallOpen(false)} style={{ border: "none", background: C.bg, width: 36, height: 36, borderRadius: 10, cursor: "pointer" }}>
-                  <X size={18} color={C.textSec} />
-                </button>
-              </div>
-              <p style={{ margin: "8px 0 16px", fontSize: 14, color: C.textSec, lineHeight: 1.65 }}>
-                {paywallReason === "income" && "You crossed into advanced planning territory. Your diagnostic stays free; detailed recommendations are part of Full Access."}
-                {paywallReason === "credits" && "We found additional opportunities in your profile. Unlock card-level guidance and exact math behind each one."}
-                {paywallReason === "export" && "Exporting your CPA pack is included in Full Access and Pro + AI."}
-                {paywallReason === "ai" && "Your AI answer is personalized to this scenario. Unlock Full Access, then upgrade to Pro + AI for unlimited sessions."}
-              </p>
-
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: 12 }}>
-                <button onClick={() => setSelectedPlan("full")} style={{ textAlign: "left", borderRadius: 14, border: `2px solid ${selectedPlan === "full" ? C.primary : C.border}`, background: selectedPlan === "full" ? `${C.primary}08` : "#fff", padding: 14, cursor: "pointer" }}>
-                  <div style={{ fontSize: 12, color: C.muted, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>Full Access</div>
-                  <div style={{ fontFamily: font.serif, color: C.text, fontSize: 28, margin: "2px 0" }}>$4.99<span style={{ fontSize: 15, color: C.muted }}>/mo</span></div>
-                  <div style={{ fontSize: 12, color: C.textSec }}>Full opportunity cards, exports, and complete recommendation details.</div>
-                </button>
-                <button onClick={() => setSelectedPlan("pro")} style={{ textAlign: "left", borderRadius: 14, border: `2px solid ${selectedPlan === "pro" ? C.primary : C.border}`, background: selectedPlan === "pro" ? `${C.primary}08` : "#fff", padding: 14, cursor: "pointer" }}>
-                  <div style={{ fontSize: 12, color: C.muted, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>Pro + AI</div>
-                  <div style={{ fontFamily: font.serif, color: C.text, fontSize: 28, margin: "2px 0" }}>$9.99<span style={{ fontSize: 15, color: C.muted }}>/mo</span></div>
-                  <div style={{ fontSize: 12, color: C.textSec }}>Everything in Full Access plus unlimited personalized AI sessions.</div>
-                </button>
+              <div style={{ textAlign: "center", marginBottom: 20 }}>
+                <div style={{ fontSize: 48, marginBottom: 12 }}>🔓</div>
+                <h3 style={{ margin: 0, fontFamily: font.sans, fontWeight: 800, fontSize: 26, color: C.text, lineHeight: 1.2 }}>Unlock your full tax picture</h3>
+                <p style={{ margin: "10px 0 0", fontSize: 16, color: C.textSec, lineHeight: 1.55 }}>
+                  {paywallReason === "income" && "You're in advanced territory. The full prescription is one tap away."}
+                  {paywallReason === "credits" && "We found more opportunities in your profile. Unlock the details."}
+                  {paywallReason === "export" && "Exporting your CPA pack is included when you upgrade."}
+                  {paywallReason === "ai" && "Your personalized AI answer is ready. Unlock to see it."}
+                </p>
               </div>
 
-              <div style={{ marginTop: 12, fontSize: 12, color: C.muted }}>
-                3-month minimum commitment applies. Cancel anytime after the minimum term.
+              <div style={{ display: "grid", gap: 12, marginBottom: 20 }}>
+                <button onClick={() => setSelectedPlan("full")} style={{ textAlign: "left", borderRadius: 20, border: `3px solid ${selectedPlan === "full" ? C.primary : C.border}`, background: selectedPlan === "full" ? `${C.primary}0C` : C.surface, padding: "18px 20px", cursor: "pointer", transition: "all 0.15s" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: C.text }}>Full Access</div>
+                      <div style={{ fontSize: 14, color: C.textSec, marginTop: 2 }}>All cards, exports, and full recommendations</div>
+                    </div>
+                    <div style={{ fontFamily: font.sans, fontWeight: 800, color: C.primary, fontSize: 24, whiteSpace: "nowrap" }}>$4.99<span style={{ fontSize: 14, color: C.muted, fontWeight: 600 }}>/mo</span></div>
+                  </div>
+                </button>
+                <button onClick={() => setSelectedPlan("pro")} style={{ textAlign: "left", borderRadius: 20, border: `3px solid ${selectedPlan === "pro" ? C.secondary : C.border}`, background: selectedPlan === "pro" ? `${C.secondary}0C` : C.surface, padding: "18px 20px", cursor: "pointer", transition: "all 0.15s" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: C.text }}>Pro + AI <span style={{ fontSize: 13, fontWeight: 700, color: C.secondary, background: `${C.secondary}14`, padding: "2px 8px", borderRadius: 99, marginLeft: 6 }}>Popular</span></div>
+                      <div style={{ fontSize: 14, color: C.textSec, marginTop: 2 }}>Everything + unlimited personalized AI sessions</div>
+                    </div>
+                    <div style={{ fontFamily: font.sans, fontWeight: 800, color: C.secondary, fontSize: 24, whiteSpace: "nowrap" }}>$9.99<span style={{ fontSize: 14, color: C.muted, fontWeight: 600 }}>/mo</span></div>
+                  </div>
+                </button>
               </div>
+
               {primaryOpportunity && (
-                <div style={{ marginTop: 10, fontSize: 13, color: C.textSec }}>
-                  Example from your profile: <strong style={{ color: C.text }}>{primaryOpportunity.name}</strong> shows meaningful savings potential.
+                <div style={{ textAlign: "center", marginBottom: 16, fontSize: 15, color: C.textSec }}>
+                  Your top opportunity: <strong style={{ color: C.text }}>{primaryOpportunity.name}</strong>
                 </div>
               )}
-              {checkoutNotice && <div style={{ marginTop: 10, fontSize: 12, color: C.danger }}>{checkoutNotice}</div>}
+              {checkoutNotice && <div style={{ textAlign: "center", marginBottom: 12, fontSize: 14, color: C.danger }}>{checkoutNotice}</div>}
 
-              <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <button
-                  onClick={handleCheckout}
-                  disabled={checkoutLoading}
-                  style={{ border: "none", borderRadius: 12, background: C.primary, color: "#fff", fontSize: 14, fontWeight: 700, padding: "12px 16px", cursor: checkoutLoading ? "wait" : "pointer" }}
-                >
-                  {checkoutLoading ? "Starting checkout..." : `Unlock ${selectedPlan === "pro" ? "Pro + AI" : "Full Access"}`}
-                </button>
-                <button onClick={() => setPaywallOpen(false)} style={{ border: `1px solid ${C.border}`, borderRadius: 12, background: "#fff", color: C.textSec, fontSize: 14, fontWeight: 700, padding: "12px 16px", cursor: "pointer" }}>
-                  Keep exploring free diagnostic
-                </button>
-              </div>
+              <button
+                onClick={handleCheckout}
+                disabled={checkoutLoading}
+                style={{ width: "100%", border: "none", borderRadius: 18, background: selectedPlan === "pro" ? C.secondary : C.primary, color: "#fff", fontSize: 18, fontWeight: 800, padding: "18px 24px", cursor: checkoutLoading ? "wait" : "pointer", boxShadow: `0 6px 20px ${selectedPlan === "pro" ? C.secondary : C.primary}40`, transition: "all 0.15s" }}
+              >
+                {checkoutLoading ? "Starting checkout..." : "Let's go"}
+              </button>
+              <button onClick={() => setPaywallOpen(false)} style={{ width: "100%", marginTop: 10, border: "none", background: "transparent", color: C.muted, fontSize: 15, fontWeight: 700, padding: "12px", cursor: "pointer" }}>
+                Keep exploring for free
+              </button>
+              <p style={{ textAlign: "center", marginTop: 8, fontSize: 13, color: C.muted }}>3-month minimum. Cancel anytime after.</p>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <motion.button onClick={() => setChatOpen(!chatOpen)} whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}
-        style={{ position: "fixed", bottom: 22, right: 16, width: 56, height: 56, borderRadius: "50%", background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLight})`, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 4px 20px ${C.primary}40`, zIndex: 1000 }}
+      <motion.button onClick={() => setChatOpen(!chatOpen)} whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.92 }}
+        style={{ position: "fixed", bottom: 24, right: 20, width: 64, height: 64, borderRadius: "50%", background: `linear-gradient(135deg, ${C.secondary}, ${C.secondaryLight})`, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 6px 24px ${C.secondary}45`, zIndex: 1000, fontSize: 24 }}
         aria-label={chatOpen ? "Close chat" : "Open tax assistant"}>
-        {chatOpen ? <X size={20} color="#fff" /> : <MessageCircle size={20} color="#fff" />}
+        {chatOpen ? <X size={24} color="#fff" /> : "🤖"}
       </motion.button>
       <AnimatePresence>
         {chatOpen && (
@@ -1156,12 +1184,8 @@ export default function TaxedApp({ session }) {
       </AnimatePresence>
       <style>{`
         @media (max-width: 768px) {
-          .calculator-page { padding-bottom: 92px !important; }
-          .calculator-report { padding: 20px 14px !important; }
-        }
-
-        @media (max-width: 480px) {
-          .calculator-report { padding: 16px 10px !important; }
+          .calculator-page { padding-bottom: 100px !important; }
+          .calculator-report { padding: 20px 16px !important; max-width: 100% !important; }
         }
       `}</style>
     </div>
