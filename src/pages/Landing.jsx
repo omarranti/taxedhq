@@ -8,13 +8,14 @@ const demoVideoSrc = `${import.meta.env.BASE_URL}media/model-demo.mp4`;
 const demoPosterSrc = `${import.meta.env.BASE_URL}og-image.png`;
 
 const glass = {
-  background: "rgba(255,255,255,0.7)",
-  border: "1px solid #d6e2ef",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
+  background: "rgba(255,255,255,0.92)",
+  border: "1px solid #e7ebf0",
+  boxShadow: "0 10px 30px rgba(15,23,42,0.06)",
+  backdropFilter: "blur(10px)",
+  WebkitBackdropFilter: "blur(10px)",
 };
 
-const smoothEase = [0.22, 1, 0.36, 1];
+const smoothEase = [0.2, 0.9, 0.25, 1];
 const slamEase = [0.18, 0.85, 0.28, 1];
 const HERO_LINE_ONE = "You File Every Year...";
 const HERO_LINE_TWO = "You Still Don't Know Where the Money Went?";
@@ -30,22 +31,22 @@ function WhoCard({ icon: Icon, title, text, reduceMotion }) {
       initial={reduceMotion ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 20, filter: "blur(8px)" }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true }}
-      transition={{ duration: reduceMotion ? 0 : 0.55, ease: smoothEase }}
-      whileHover={reduceMotion ? undefined : { y: -3, boxShadow: "0 16px 30px rgba(16,42,67,0.12)" }}
-      style={{ ...glass, borderRadius: 22, padding: 24 }}
+      transition={{ duration: reduceMotion ? 0 : 0.48, ease: smoothEase }}
+      whileHover={reduceMotion ? undefined : { y: -2, boxShadow: "0 14px 28px rgba(15,23,42,0.10)" }}
+      style={{ ...glass, borderRadius: 20, padding: 24 }}
     >
-      <div style={{ width: 42, height: 42, borderRadius: 12, background: "rgba(31,157,139,0.12)", display: "grid", placeItems: "center", marginBottom: 14 }}>
+      <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(31,157,139,0.10)", display: "grid", placeItems: "center", marginBottom: 14 }}>
         <Icon size={20} color="#1f9d8b" />
       </div>
-      <h3 style={{ margin: "0 0 8px", fontSize: 18, color: "#102a43" }}>{title}</h3>
-      <p style={{ margin: 0, lineHeight: 1.7, color: "#4f6478", fontSize: 14 }}>{text}</p>
+      <h3 style={{ margin: "0 0 8px", fontSize: 18, color: "#0f2438" }}>{title}</h3>
+      <p style={{ margin: 0, lineHeight: 1.72, color: "#4b5f73", fontSize: 14 }}>{text}</p>
     </motion.div>
   );
 }
 
 function ProblemParagraph({ children }) {
   return (
-    <p style={{ margin: 0, color: "#3f5469", lineHeight: 1.86, fontSize: "clamp(15px, 1.4vw, 18px)" }}>
+    <p style={{ margin: 0, color: "#3f5366", lineHeight: 1.84, fontSize: "clamp(15px, 1.35vw, 18px)" }}>
       {children}
     </p>
   );
@@ -57,8 +58,8 @@ function RevealText({ children, reduceMotion, delay = 0 }) {
       initial={reduceMotion ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 10, filter: "blur(6px)" }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: reduceMotion ? 0 : 0.52, delay: reduceMotion ? 0 : delay, ease: smoothEase }}
-      style={{ margin: 0, color: "#3f5469", lineHeight: 1.86, fontSize: "clamp(15px, 1.4vw, 18px)" }}
+      transition={{ duration: reduceMotion ? 0 : 0.46, delay: reduceMotion ? 0 : delay, ease: smoothEase }}
+      style={{ margin: 0, color: "#3f5366", lineHeight: 1.84, fontSize: "clamp(15px, 1.35vw, 18px)" }}
     >
       {children}
     </motion.p>
@@ -67,7 +68,7 @@ function RevealText({ children, reduceMotion, delay = 0 }) {
 
 function ExpandableTab({ item, open, onToggle, reduceMotion }) {
   return (
-    <div style={{ border: "1px solid #d8e3f0", borderRadius: 14, overflow: "hidden", background: "rgba(255,255,255,0.72)" }}>
+    <div style={{ border: "1px solid #e2e7ed", borderRadius: 16, overflow: "hidden", background: "rgba(255,255,255,0.94)" }}>
       <button
         onClick={onToggle}
         aria-expanded={open}
@@ -76,7 +77,7 @@ function ExpandableTab({ item, open, onToggle, reduceMotion }) {
           width: "100%",
           border: "none",
           background: "transparent",
-          padding: "14px 16px",
+          padding: "15px 16px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -85,7 +86,7 @@ function ExpandableTab({ item, open, onToggle, reduceMotion }) {
           textAlign: "left",
         }}
       >
-        <span style={{ color: "#1f9d8b", fontWeight: 700, fontSize: 14 }}>{item.title}</span>
+        <span style={{ color: "#1f9d8b", fontWeight: 700, fontSize: 14.5 }}>{item.title}</span>
         <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: reduceMotion ? 0 : 0.2 }}>
           <ChevronDown size={16} color="#1f9d8b" />
         </motion.span>
@@ -97,10 +98,10 @@ function ExpandableTab({ item, open, onToggle, reduceMotion }) {
             initial={reduceMotion ? { opacity: 1, height: "auto" } : { opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={reduceMotion ? { opacity: 1, height: 0 } : { opacity: 0, height: 0 }}
-            transition={{ duration: reduceMotion ? 0 : 0.28, ease: smoothEase }}
+            transition={{ duration: reduceMotion ? 0 : 0.24, ease: smoothEase }}
             style={{ overflow: "hidden" }}
           >
-            <div style={{ borderTop: "1px solid #d8e3f0", padding: "12px 16px 14px" }}>
+            <div style={{ borderTop: "1px solid #e2e7ed", padding: "12px 16px 14px" }}>
               <p style={{ margin: "0 0 10px", color: "#4f6478", fontSize: 14, lineHeight: 1.7 }}>{item.detail}</p>
               <Link to={item.href} className="micro-press" style={{ color: "#1f9d8b", textDecoration: "none", fontWeight: 700, fontSize: 13 }}>
                 Open page <ArrowRight size={14} style={{ verticalAlign: "text-bottom" }} />
@@ -190,30 +191,30 @@ export default function Landing() {
   }, [heroPhase, reduceMotion]);
 
   return (
-    <div style={{ fontFamily: font.sans, background: "#f5f9ff", color: "#102a43", minHeight: "100vh", position: "relative" }}>
+    <div style={{ fontFamily: font.sans, background: "#f7f8fa", color: "#102a43", minHeight: "100vh", position: "relative" }}>
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
         <motion.div
           animate={reduceMotion ? { x: 0, y: 0 } : { x: [0, -16, 0], y: [0, 12, 0] }}
           transition={{ duration: 18, ease: "easeInOut", repeat: Infinity }}
-          style={{ position: "absolute", top: "-18%", right: "-4%", width: "50vw", height: "50vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(31,157,139,0.16), transparent 66%)", filter: "blur(48px)" }}
+          style={{ position: "absolute", top: "-18%", right: "-4%", width: "50vw", height: "50vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(31,157,139,0.08), transparent 66%)", filter: "blur(58px)" }}
         />
         <motion.div
           animate={reduceMotion ? { x: 0, y: 0 } : { x: [0, 14, 0], y: [0, -10, 0] }}
           transition={{ duration: 16, ease: "easeInOut", repeat: Infinity }}
-          style={{ position: "absolute", bottom: "-22%", left: "-12%", width: "54vw", height: "54vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(59,130,246,0.12), transparent 68%)", filter: "blur(48px)" }}
+          style={{ position: "absolute", bottom: "-22%", left: "-12%", width: "54vw", height: "54vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(59,130,246,0.07), transparent 68%)", filter: "blur(58px)" }}
         />
       </div>
 
       {/* Section 1: Hero */}
-      <section className="hero-section" style={{ position: "relative", zIndex: 1, padding: "152px 24px 84px" }}>
+      <section className="hero-section" style={{ position: "relative", zIndex: 1, padding: "146px 24px 82px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <motion.div
             initial={reduceMotion ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 20, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: reduceMotion ? 0 : 0.8, ease: smoothEase }}
-            style={{ textAlign: "center", marginBottom: 30 }}
+            transition={{ duration: reduceMotion ? 0 : 0.72, ease: smoothEase }}
+            style={{ textAlign: "center", marginBottom: 28 }}
           >
-            <div style={{ ...glass, display: "inline-flex", borderRadius: 999, padding: "7px 14px", color: "#1f9d8b", fontWeight: 700, fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 28 }}>
+            <div style={{ ...glass, display: "inline-flex", borderRadius: 999, padding: "7px 14px", color: "#1f9d8b", fontWeight: 700, fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 24 }}>
               Tax Clarity Platform
             </div>
 
@@ -226,7 +227,7 @@ export default function Landing() {
                     animate={heroPhase === "line1Fade" ? { opacity: 0, y: -6, filter: "blur(5px)" } : { opacity: 1, y: 0, filter: "blur(0px)" }}
                     exit={{ opacity: 0, y: -8, filter: "blur(5px)" }}
                     transition={{ duration: reduceMotion ? 0 : 0.42, ease: smoothEase }}
-                    style={{ margin: 0, fontFamily: font.serif, fontSize: "clamp(38px, 6.2vw, 78px)", lineHeight: 1.02, letterSpacing: "-0.03em" }}
+                    style={{ margin: 0, fontFamily: font.serif, fontSize: "clamp(36px, 5.8vw, 74px)", lineHeight: 1.03, letterSpacing: "-0.028em" }}
                   >
                     {reduceMotion ? HERO_LINE_ONE : HERO_LINE_ONE.slice(0, line1Count)}
                     {!reduceMotion && heroPhase === "line1Typing" && <span className="hero-cursor">|</span>}
@@ -240,7 +241,7 @@ export default function Landing() {
                     animate={heroPhase === "line2Slam" ? { opacity: 0, y: -88, filter: "blur(6px)", scale: 0.985 } : { opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
                     exit={{ opacity: 0, y: -92, filter: "blur(6px)", scale: 0.985 }}
                     transition={{ duration: reduceMotion ? 0 : heroPhase === "line2Slam" ? SLAM_MS / 1000 : 0.44, ease: heroPhase === "line2Slam" ? slamEase : smoothEase }}
-                    style={{ margin: 0, fontFamily: font.serif, fontSize: "clamp(38px, 6.2vw, 78px)", lineHeight: 1.02, letterSpacing: "-0.03em" }}
+                    style={{ margin: 0, fontFamily: font.serif, fontSize: "clamp(36px, 5.8vw, 74px)", lineHeight: 1.03, letterSpacing: "-0.028em" }}
                   >
                     {reduceMotion ? HERO_LINE_TWO : HERO_LINE_TWO.slice(0, line2Count)}
                     {!reduceMotion && heroPhase === "line2Typing" && <span className="hero-cursor">|</span>}
@@ -249,19 +250,19 @@ export default function Landing() {
               </AnimatePresence>
             </div>
 
-            <div style={{ margin: "0 auto 30px", maxWidth: 840, minHeight: 72, visibility: reduceMotion || heroPhase === "done" || heroPhase === "demoReveal" ? "visible" : "hidden" }}>
+            <div style={{ margin: "0 auto 26px", maxWidth: 800, minHeight: 72, visibility: reduceMotion || heroPhase === "done" || heroPhase === "demoReveal" ? "visible" : "hidden" }}>
               <motion.p
                 initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 8, filter: "blur(6px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 transition={{ duration: reduceMotion ? 0 : 0.52, ease: smoothEase }}
-                style={{ margin: 0, color: "#43596e", lineHeight: 1.8, fontSize: "clamp(16px, 1.6vw, 20px)" }}
+                style={{ margin: 0, color: "#495b6d", lineHeight: 1.78, fontSize: "clamp(16px, 1.5vw, 19px)" }}
               >
                 TurboTax files your return. Your CPA signs off. But neither one ever shows you the full picture - your brackets, your credits, your real take-home. Taxed does.
               </motion.p>
             </div>
 
-            <div className="hero-cta" style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
-              <Link to="/calculator" className="micro-press" style={{ padding: "14px 24px", borderRadius: 999, background: "#1f9d8b", color: "#fff", textDecoration: "none", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 2px 10px rgba(31,157,139,0.2)" }}>
+            <div className="hero-cta" style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 12, marginBottom: 18 }}>
+              <Link to="/calculator" className="micro-press hero-primary-cta" style={{ padding: "14px 24px", borderRadius: 999, background: "#13283e", color: "#fff", textDecoration: "none", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 8px 22px rgba(19,40,62,0.18)" }}>
                 See Your Full Picture <ArrowRight size={16} />
               </Link>
             </div>
@@ -271,9 +272,9 @@ export default function Landing() {
             initial={reveal.initial}
             animate={reduceMotion || heroPhase === "demoReveal" || heroPhase === "done" ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 16, filter: "blur(8px)" }}
             transition={reduceMotion ? { duration: 0 } : { duration: 0.56, ease: smoothEase }}
-            style={{ ...glass, borderRadius: 22, padding: 16, marginBottom: 18 }}
+            style={{ ...glass, borderRadius: 22, padding: 16, marginBottom: 16 }}
           >
-            <div style={{ borderRadius: 14, overflow: "hidden", border: "1px solid #d8e3f0", background: "#fff" }}>
+            <div style={{ borderRadius: 14, overflow: "hidden", border: "1px solid #e2e7ed", background: "#fff", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)" }}>
               <video src={demoVideoSrc} poster={demoPosterSrc} autoPlay loop muted playsInline preload="auto" style={{ width: "100%", display: "block", minHeight: 220, objectFit: "cover" }} />
             </div>
           </motion.div>
@@ -290,7 +291,7 @@ export default function Landing() {
               "Based on current IRS published data",
               "Educational visibility, not filing software",
             ].map((item) => (
-              <div key={item} style={{ display: "flex", alignItems: "center", gap: 8, color: "#334e68", fontSize: 13, fontWeight: 600 }}>
+              <div key={item} style={{ display: "flex", alignItems: "center", gap: 8, color: "#334a60", fontSize: 13, fontWeight: 600 }}>
                 <CheckCircle2 size={16} color="#1f9d8b" />
                 {item}
               </div>
@@ -333,13 +334,13 @@ export default function Landing() {
       </section>
 
       {/* Section 2: Core Problem */}
-      <section style={{ position: "relative", zIndex: 1, padding: "22px 24px 80px" }}>
+      <section style={{ position: "relative", zIndex: 1, padding: "20px 24px 78px" }}>
         <motion.div
           initial={reveal.initial}
           whileInView={reveal.whileInView}
           viewport={{ once: true }}
           transition={reveal.transition}
-          style={{ maxWidth: 980, margin: "0 auto", ...glass, borderRadius: 24, padding: "clamp(22px, 4vw, 42px)" }}
+          style={{ maxWidth: 980, margin: "0 auto", ...glass, borderRadius: 24, padding: "clamp(22px, 4vw, 40px)" }}
         >
           <p style={{ margin: 0, color: "#1f9d8b", fontSize: 11, fontWeight: 700, letterSpacing: "0.11em", textTransform: "uppercase", marginBottom: 14 }}>
             Section 2: The Core Problem
@@ -363,13 +364,13 @@ export default function Landing() {
       </section>
 
       {/* Section 3: Opportunity */}
-      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 90px" }}>
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 86px" }}>
         <motion.div
           initial={reveal.initial}
           whileInView={reveal.whileInView}
           viewport={{ once: true }}
           transition={reveal.transition}
-          style={{ maxWidth: 980, margin: "0 auto", ...glass, borderRadius: 24, padding: "clamp(22px, 4vw, 42px)" }}
+          style={{ maxWidth: 980, margin: "0 auto", ...glass, borderRadius: 24, padding: "clamp(22px, 4vw, 40px)" }}
         >
           <p style={{ margin: 0, color: "#1f9d8b", fontSize: 11, fontWeight: 700, letterSpacing: "0.11em", textTransform: "uppercase", marginBottom: 14 }}>
             Section 3: The Opportunity
@@ -397,21 +398,98 @@ export default function Landing() {
           </div>
 
           <div style={{ marginTop: 20 }}>
-            <Link to="/calculator" className="micro-press" style={{ padding: "14px 24px", borderRadius: 999, background: "#1f9d8b", color: "#fff", textDecoration: "none", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 2px 10px rgba(31,157,139,0.2)" }}>
+            <Link to="/calculator" className="micro-press" style={{ padding: "14px 24px", borderRadius: 999, background: "#13283e", color: "#fff", textDecoration: "none", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 8px 22px rgba(19,40,62,0.16)" }}>
               See Your Full Picture <ArrowRight size={16} />
             </Link>
           </div>
         </motion.div>
       </section>
 
-      {/* Section 4: Who This Is For */}
-      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 128px" }}>
+      {/* Section 4: Pricing */}
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 92px" }}>
+        <motion.div
+          initial={reveal.initial}
+          whileInView={reveal.whileInView}
+          viewport={{ once: true }}
+          transition={reveal.transition}
+          style={{ maxWidth: 980, margin: "0 auto" }}
+        >
+          <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <h2 style={{ margin: "0 0 16px", fontFamily: font.serif, fontSize: "clamp(28px, 4vw, 48px)", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+              Simple, transparent pricing
+            </h2>
+            <p style={{ margin: 0, color: "#43596e", fontSize: "clamp(16px, 1.6vw, 18px)", maxWidth: 600, marginInline: "auto" }}>
+              Start exploring for free. Unlock the full prescription when you're ready.
+            </p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 24, alignItems: "start" }}>
+            {/* Free Tier */}
+            <div style={{ ...glass, borderRadius: 24, padding: 32, border: "1px solid #e4e9ee" }}>
+              <h3 style={{ margin: "0 0 8px", fontSize: 22, fontWeight: 700, color: "#102a43" }}>Free</h3>
+              <p style={{ margin: "0 0 24px", color: "#43596e", fontSize: 15, minHeight: 44 }}>Basic tax breakdown and effective rate calculation.</p>
+              <div style={{ fontSize: 36, fontWeight: 800, color: "#102a43", marginBottom: 24, fontFamily: font.sans }}>$0</div>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 32px", display: "grid", gap: 12 }}>
+                {[
+                  "Federal & State brackets",
+                  "Effective tax rate",
+                  "Top opportunity revealed",
+                  "Interactive income slider"
+                ].map((feature, i) => (
+                  <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 15, color: "#334e68" }}>
+                    <CheckCircle2 size={18} color="#829ab1" style={{ flexShrink: 0, marginTop: 2 }} />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link to="/calculator" style={{ display: "block", textAlign: "center", padding: "14px", borderRadius: 12, background: "rgba(16, 42, 67, 0.06)", color: "#102a43", textDecoration: "none", fontWeight: 700, transition: "background 0.2s" }}>
+                Start Free
+              </Link>
+            </div>
+
+            {/* Founders Club Tier */}
+            <div style={{ background: "#fff", borderRadius: 24, padding: 32, border: "1.5px solid #d6dde5", boxShadow: "0 16px 36px rgba(19,40,62,0.11)", position: "relative" }}>
+              <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", background: "#1f9d8b", color: "#fff", padding: "4px 16px", borderRadius: 99, fontSize: 13, fontWeight: 800, letterSpacing: "0.05em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                Limited Offer
+              </div>
+              <h3 style={{ margin: "0 0 8px", fontSize: 22, fontWeight: 700, color: "#102a43" }}>Founders Club</h3>
+              <p style={{ margin: "0 0 24px", color: "#43596e", fontSize: 15, minHeight: 44 }}>The complete tax clarity platform. First 10,000 members only.</p>
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+                  <span style={{ fontSize: 36, fontWeight: 800, color: "#1f9d8b", fontFamily: font.sans }}>$19.99</span>
+                </div>
+                <div style={{ fontSize: 14, color: "#43596e", marginTop: 4, fontWeight: 500 }}>for 3 months, then $9.99/mo</div>
+              </div>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 32px", display: "grid", gap: 12 }}>
+                {[
+                  "Everything in Free",
+                  "All opportunities unlocked",
+                  "Export CPA-ready PDF",
+                  "Unlimited AI tax answers",
+                  "Penalty abatement scripts"
+                ].map((feature, i) => (
+                  <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 15, color: "#102a43", fontWeight: i === 0 ? 600 : 400 }}>
+                    <CheckCircle2 size={18} color="#1f9d8b" style={{ flexShrink: 0, marginTop: 2 }} />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link to="/calculator" style={{ display: "block", textAlign: "center", padding: "14px", borderRadius: 12, background: "#13283e", color: "#fff", textDecoration: "none", fontWeight: 700, transition: "background 0.2s", boxShadow: "0 10px 24px rgba(19,40,62,0.18)" }}>
+                Unlock Full Access
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Section 5: Who This Is For */}
+      <section style={{ position: "relative", zIndex: 1, padding: "0 24px 120px" }}>
         <div style={{ maxWidth: 1080, margin: "0 auto" }}>
           <motion.div
             initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: reduceMotion ? 0 : 0.6, ease: smoothEase }}
+            transition={{ duration: reduceMotion ? 0 : 0.52, ease: smoothEase }}
             style={{ textAlign: "center", marginBottom: 28 }}
           >
             <p style={{ margin: 0, color: "#1f9d8b", fontSize: 11, fontWeight: 700, letterSpacing: "0.11em", textTransform: "uppercase", marginBottom: 10 }}>
@@ -445,7 +523,7 @@ export default function Landing() {
         @media (hover: hover) {
           .micro-press:hover {
             transform: translateY(-1px);
-            box-shadow: 0 10px 24px rgba(16,42,67,0.14);
+            box-shadow: 0 12px 26px rgba(16,42,67,0.15);
           }
         }
 
@@ -464,12 +542,21 @@ export default function Landing() {
 
         @media (max-width: 768px) {
           .hero-section {
-            padding: 124px 16px 70px !important;
+            padding: 118px 16px 64px !important;
           }
           .hero-cta a {
             width: 100%;
             justify-content: center;
             max-width: 380px;
+          }
+          .hero-primary-cta {
+            min-height: 48px;
+          }
+        }
+
+        @media (max-width: 560px) {
+          .hero-section {
+            padding: 106px 14px 56px !important;
           }
         }
       `}</style>

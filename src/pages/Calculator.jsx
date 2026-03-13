@@ -11,6 +11,8 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { supabase } from "../lib/supabase";
 import { claimEntitlement, getCheckoutStatus, loadEntitlement, startCheckout } from "../lib/billing";
+import PersonalizedTaxPlanCard from "../components/PersonalizedTaxPlanCard";
+import { buildPersonalizedTaxPlan } from "../lib/personalizedTaxPlan";
 
 /* ═══════════════════════════════════════════
    BRAND CONFIG
@@ -694,6 +696,31 @@ export default function TaxedApp({ session }) {
   }, [r.eitc.amount, r.eitc.eligible, income, iraSave, hsaSave, r.calEitc.eligible, r.calEitc.amount]);
   const primaryOpportunity = opportunities[0];
   const lockedOpportunities = opportunities.slice(1, 4);
+  const personalizedPlan = useMemo(
+    () =>
+      buildPersonalizedTaxPlan({
+        report: r,
+        opportunities,
+        incomeType,
+        hasPenalty,
+        hasStudentLoans,
+        hasRetirement,
+        hasHDHP,
+        filingStatusLabel: FILING.find((f) => f.value === status)?.label || status,
+        stateLabel: STATES.find((s) => s.val === stateCode)?.label || stateCode,
+      }),
+    [
+      r,
+      opportunities,
+      incomeType,
+      hasPenalty,
+      hasStudentLoans,
+      hasRetirement,
+      hasHDHP,
+      status,
+      stateCode,
+    ]
+  );
 
   if (!boarded) return <Onboarding onDone={onBoard} />;
 
@@ -716,6 +743,55 @@ export default function TaxedApp({ session }) {
     const pdfH = (canvas.height * pdfW) / canvas.width;
     pdf.addImage(imgData, "JPEG", 0, 0, pdfW, pdfH);
     pdf.save(`Taxed_Report_${stateCode}.pdf`);
+  };
+
+  const exportPersonalizedPlan = () => {
+    if (!hasFullAccess) {
+      openPaywall("plan");
+      return;
+    }
+
+    const doc = new jsPDF("p", "pt", "letter");
+    const margin = 50;
+    let y = margin;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Taxed Personalized Tax Plan", margin, y);
+    y += 24;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    doc.text(`Generated for ${fmt(income)} income • ${statusLabel} • ${stateLabel}`, margin, y);
+    y += 20;
+    doc.text(`Estimated total impact: ${personalizedPlan.estimatedTotalImpact}`, margin, y);
+    y += 20;
+
+    personalizedPlan.phases.forEach((phase) => {
+      if (y > 700) {
+        doc.addPage();
+        y = margin;
+      }
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text(`${phase.title} (${phase.deadlineLabel})`, margin, y);
+      y += 16;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.text(`Estimated impact: ${phase.estimatedImpact}`, margin, y);
+      y += 14;
+      phase.steps.forEach((step) => {
+        const lines = doc.splitTextToSize(`• ${step}`, 510);
+        doc.text(lines, margin, y);
+        y += lines.length * 13;
+      });
+      doc.text(`Why: ${phase.why}`, margin, y);
+      y += 14;
+      doc.text(`Confidence: ${phase.confidenceNote}`, margin, y);
+      y += 18;
+    });
+
+    doc.setFontSize(9);
+    doc.text("Educational planning tool only. Confirm filing decisions with your CPA.", margin, 760);
+    doc.save("Taxed_Personalized_Tax_Plan.pdf");
   };
 
   const saveScenarioToCloud = async () => {
@@ -1108,6 +1184,19 @@ export default function TaxedApp({ session }) {
           )}
         </div>
 
+        <Sect icon="🗂️">Personalized Tax Plan</Sect>
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}>
+          <PersonalizedTaxPlanCard
+            plan={personalizedPlan}
+            colors={C}
+            fonts={font}
+            shadows={shadow}
+            hasFullAccess={hasFullAccess}
+            onExportPlan={exportPersonalizedPlan}
+            onUnlockPlan={() => openPaywall("plan")}
+          />
+        </motion.div>
+
         <div style={{ height: 1, background: C.border, margin: "44px 0" }} />
 
         <Sect icon="❓">Your Questions, Answered</Sect>
@@ -1171,7 +1260,8 @@ export default function TaxedApp({ session }) {
                   {paywallReason === "income" && "You're in advanced territory. The full prescription is one tap away."}
                   {paywallReason === "credits" && "We found more opportunities in your profile. Unlock the details."}
                   {paywallReason === "export" && "Exporting your CPA pack is included when you upgrade."}
-                  
+                  {paywallReason === "forms" && "Auto-generating IRS forms and letters is included in Founders Club."}
+                  {paywallReason === "plan" && "Exporting your personalized step-by-step tax plan is included in Founders Club."}
                 </p>
               </div>
 
