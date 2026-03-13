@@ -15,6 +15,14 @@ const glass = {
 };
 
 const smoothEase = [0.22, 1, 0.36, 1];
+const slamEase = [0.18, 0.85, 0.28, 1];
+const HERO_LINE_ONE = "You File Every Year...";
+const HERO_LINE_TWO = "You Still Don't Know Where the Money Went?";
+const TYPE_SPEED_MS = 34;
+const HOLD_ONE_MS = 420;
+const HOLD_TWO_MS = 520;
+const FADE_ONE_MS = 460;
+const SLAM_MS = 360;
 
 function WhoCard({ icon: Icon, title, text, reduceMotion }) {
   return (
@@ -45,16 +53,12 @@ function ProblemParagraph({ children }) {
 
 export default function Landing() {
   const [reduceMotion, setReduceMotion] = useState(false);
-  const [heroLineIdx, setHeroLineIdx] = useState(0);
+  const [heroPhase, setHeroPhase] = useState("line1Typing");
+  const [line1Count, setLine1Count] = useState(0);
+  const [line2Count, setLine2Count] = useState(0);
   const reveal = reduceMotion
     ? { initial: { opacity: 1, y: 0, filter: "blur(0px)" }, whileInView: { opacity: 1, y: 0, filter: "blur(0px)" }, transition: { duration: 0 } }
     : { initial: { opacity: 0, y: 18, filter: "blur(8px)" }, whileInView: { opacity: 1, y: 0, filter: "blur(0px)" }, transition: { duration: 0.75, ease: smoothEase } };
-
-  const heroLines = [
-    "TurboTax files your return. Your CPA signs off.",
-    "Taxed shows your full picture - brackets, credits, real take-home.",
-    "Clarity first. Filing second. No more guessing.",
-  ];
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -65,12 +69,62 @@ export default function Landing() {
   }, []);
 
   useEffect(() => {
-    if (reduceMotion) return undefined;
-    const timer = setInterval(() => {
-      setHeroLineIdx((n) => (n + 1) % heroLines.length);
-    }, 3200);
+    if (!reduceMotion) return undefined;
+    setLine1Count(HERO_LINE_ONE.length);
+    setLine2Count(HERO_LINE_TWO.length);
+    setHeroPhase("done");
+    return undefined;
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    if (reduceMotion || heroPhase !== "line1Typing") return undefined;
+    if (line1Count >= HERO_LINE_ONE.length) {
+      setHeroPhase("line1Hold");
+      return undefined;
+    }
+    const timer = setTimeout(() => setLine1Count((n) => n + 1), TYPE_SPEED_MS);
     return () => clearInterval(timer);
-  }, [reduceMotion, heroLines.length]);
+  }, [heroPhase, line1Count, reduceMotion]);
+
+  useEffect(() => {
+    if (reduceMotion || heroPhase !== "line1Hold") return undefined;
+    const timer = setTimeout(() => setHeroPhase("line1Fade"), HOLD_ONE_MS);
+    return () => clearTimeout(timer);
+  }, [heroPhase, reduceMotion]);
+
+  useEffect(() => {
+    if (reduceMotion || heroPhase !== "line1Fade") return undefined;
+    const timer = setTimeout(() => setHeroPhase("line2Typing"), FADE_ONE_MS);
+    return () => clearTimeout(timer);
+  }, [heroPhase, reduceMotion]);
+
+  useEffect(() => {
+    if (reduceMotion || heroPhase !== "line2Typing") return undefined;
+    if (line2Count >= HERO_LINE_TWO.length) {
+      setHeroPhase("line2Hold");
+      return undefined;
+    }
+    const timer = setTimeout(() => setLine2Count((n) => n + 1), TYPE_SPEED_MS);
+    return () => clearTimeout(timer);
+  }, [heroPhase, line2Count, reduceMotion]);
+
+  useEffect(() => {
+    if (reduceMotion || heroPhase !== "line2Hold") return undefined;
+    const timer = setTimeout(() => setHeroPhase("line2Slam"), HOLD_TWO_MS);
+    return () => clearTimeout(timer);
+  }, [heroPhase, reduceMotion]);
+
+  useEffect(() => {
+    if (reduceMotion || heroPhase !== "line2Slam") return undefined;
+    const timer = setTimeout(() => setHeroPhase("demoReveal"), SLAM_MS);
+    return () => clearTimeout(timer);
+  }, [heroPhase, reduceMotion]);
+
+  useEffect(() => {
+    if (reduceMotion || heroPhase !== "demoReveal") return undefined;
+    const timer = setTimeout(() => setHeroPhase("done"), 260);
+    return () => clearTimeout(timer);
+  }, [heroPhase, reduceMotion]);
 
   return (
     <div style={{ fontFamily: font.sans, background: "#f5f9ff", color: "#102a43", minHeight: "100vh", position: "relative" }}>
@@ -101,44 +155,46 @@ export default function Landing() {
             </div>
 
             <div style={{ margin: "0 auto 18px", maxWidth: 980 }}>
-              <motion.h1
-                initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: reduceMotion ? 0 : 0.6, ease: smoothEase }}
-                style={{ margin: 0, fontFamily: font.serif, fontSize: "clamp(38px, 6.2vw, 78px)", lineHeight: 1.02, letterSpacing: "-0.03em" }}
-              >
-                <motion.span
-                  initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10, filter: "blur(6px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  transition={{ duration: reduceMotion ? 0 : 0.5, ease: smoothEase }}
-                  style={{ display: "block" }}
-                >
-                  You File Every Year.
-                </motion.span>
-                <motion.span
-                  initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10, filter: "blur(6px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  transition={{ duration: reduceMotion ? 0 : 0.55, delay: reduceMotion ? 0 : 0.12, ease: smoothEase }}
-                  style={{ display: "block" }}
-                >
-                  You Still Don&apos;t Know Where the Money Went.
-                </motion.span>
-              </motion.h1>
+              <AnimatePresence mode="wait">
+                {(reduceMotion || heroPhase === "line1Typing" || heroPhase === "line1Hold" || heroPhase === "line1Fade") && (
+                  <motion.h1
+                    key="hero-line-1"
+                    initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10, filter: "blur(5px)" }}
+                    animate={heroPhase === "line1Fade" ? { opacity: 0, y: -6, filter: "blur(5px)" } : { opacity: 1, y: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, y: -8, filter: "blur(5px)" }}
+                    transition={{ duration: reduceMotion ? 0 : 0.42, ease: smoothEase }}
+                    style={{ margin: 0, fontFamily: font.serif, fontSize: "clamp(38px, 6.2vw, 78px)", lineHeight: 1.02, letterSpacing: "-0.03em" }}
+                  >
+                    {reduceMotion ? HERO_LINE_ONE : HERO_LINE_ONE.slice(0, line1Count)}
+                    {!reduceMotion && heroPhase === "line1Typing" && <span className="hero-cursor">|</span>}
+                  </motion.h1>
+                )}
+
+                {(reduceMotion || heroPhase === "line2Typing" || heroPhase === "line2Hold" || heroPhase === "line2Slam") && (
+                  <motion.h1
+                    key="hero-line-2"
+                    initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 8, filter: "blur(5px)" }}
+                    animate={heroPhase === "line2Slam" ? { opacity: 0, y: -88, filter: "blur(6px)", scale: 0.985 } : { opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
+                    exit={{ opacity: 0, y: -92, filter: "blur(6px)", scale: 0.985 }}
+                    transition={{ duration: reduceMotion ? 0 : heroPhase === "line2Slam" ? SLAM_MS / 1000 : 0.44, ease: heroPhase === "line2Slam" ? slamEase : smoothEase }}
+                    style={{ margin: 0, fontFamily: font.serif, fontSize: "clamp(38px, 6.2vw, 78px)", lineHeight: 1.02, letterSpacing: "-0.03em" }}
+                  >
+                    {reduceMotion ? HERO_LINE_TWO : HERO_LINE_TWO.slice(0, line2Count)}
+                    {!reduceMotion && heroPhase === "line2Typing" && <span className="hero-cursor">|</span>}
+                  </motion.h1>
+                )}
+              </AnimatePresence>
             </div>
 
-            <div style={{ margin: "0 auto 30px", maxWidth: 840, minHeight: 72 }}>
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={heroLineIdx}
-                  initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 8, filter: "blur(6px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -6, filter: "blur(5px)" }}
-                  transition={{ duration: reduceMotion ? 0 : 0.46, ease: smoothEase }}
-                  style={{ margin: 0, color: "#43596e", lineHeight: 1.8, fontSize: "clamp(16px, 1.6vw, 20px)" }}
-                >
-                  {reduceMotion ? heroLines[0] : heroLines[heroLineIdx]}
-                </motion.p>
-              </AnimatePresence>
+            <div style={{ margin: "0 auto 30px", maxWidth: 840, minHeight: 72, visibility: reduceMotion || heroPhase === "done" || heroPhase === "demoReveal" ? "visible" : "hidden" }}>
+              <motion.p
+                initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 8, filter: "blur(6px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                transition={{ duration: reduceMotion ? 0 : 0.52, ease: smoothEase }}
+                style={{ margin: 0, color: "#43596e", lineHeight: 1.8, fontSize: "clamp(16px, 1.6vw, 20px)" }}
+              >
+                TurboTax files your return. Your CPA signs off. But neither one ever shows you the full picture - your brackets, your credits, your real take-home. Taxed does.
+              </motion.p>
             </div>
 
             <div className="hero-cta" style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
@@ -150,9 +206,8 @@ export default function Landing() {
 
           <motion.div
             initial={reveal.initial}
-            whileInView={reveal.whileInView}
-            viewport={{ once: true }}
-            transition={reduceMotion ? { duration: 0 } : { duration: 0.7, ease: smoothEase }}
+            animate={reduceMotion || heroPhase === "demoReveal" || heroPhase === "done" ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 16, filter: "blur(8px)" }}
+            transition={reduceMotion ? { duration: 0 } : { duration: 0.56, ease: smoothEase }}
             style={{ ...glass, borderRadius: 22, padding: 16, marginBottom: 18 }}
           >
             <div style={{ borderRadius: 14, overflow: "hidden", border: "1px solid #d8e3f0", background: "#fff" }}>
@@ -294,6 +349,17 @@ export default function Landing() {
       </section>
 
       <style>{`
+        .hero-cursor {
+          margin-left: 2px;
+          color: #1f9d8b;
+          animation: heroCursorBlink 0.9s steps(1, end) infinite;
+        }
+
+        @keyframes heroCursorBlink {
+          0%, 49% { opacity: 1; }
+          50%, 100% { opacity: 0; }
+        }
+
         @media (hover: hover) {
           .micro-press:hover {
             transform: translateY(-1px);
@@ -308,6 +374,10 @@ export default function Landing() {
         .micro-press:focus-visible {
           box-shadow: 0 0 0 3px rgba(31,157,139,0.2);
           outline: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .hero-cursor { animation: none !important; }
         }
 
         @media (max-width: 768px) {
