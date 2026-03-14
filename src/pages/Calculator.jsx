@@ -7,8 +7,6 @@ import {
   Phone, Briefcase, Shield, PiggyBank, Heart, CloudUpload,
   ChevronRight, Sparkles, Users, Home, User, ChevronsUpDown
 } from "lucide-react";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
 import { supabase } from "../lib/supabase";
 import { claimEntitlement, getCheckoutStatus, loadEntitlement, startCheckout } from "../lib/billing";
 import PersonalizedTaxPlanCard from "../components/PersonalizedTaxPlanCard";
@@ -168,7 +166,7 @@ const fmt = (n) => "$" + Math.round(n).toLocaleString();
 const fmtP = (r) => (r * 100).toFixed(1) + "%";
 const short = (n) => n >= 1000 ? "$" + Math.round(n / 1000) + "K" : fmt(n);
 
-const C = { primary: "#1a3c4d", primaryLight: "#2a6f5f", primaryAccent: "#1f9d8b", teal: "#1f9d8b", gold: "#c9952b", goldLight: "#f5e6c8", accent: "#c9952b", accentDark: "#a67b1d", success: "#1f9d8b", warning: "#c9952b", danger: "#c0392b", info: "#2a6f5f", bg: "#f4f7f4", surface: "#FFFFFF", border: "#e2e0da", text: "#1a2e35", textSec: "#4a6670", muted: "#7a9099", fedPill: "#1a3c4d", caPill: "#2a6f5f", ssPill: "#5a8a7a", medPill: "#c9952b", takePill: "#1f9d8b" };
+const C = { primary: "#1a3c4d", secondary: "#2a6f5f", primaryLight: "#2a6f5f", primaryAccent: "#1f9d8b", teal: "#1f9d8b", gold: "#c9952b", goldLight: "#f5e6c8", accent: "#c9952b", accentDark: "#a67b1d", success: "#1f9d8b", warning: "#c9952b", danger: "#c0392b", info: "#2a6f5f", bg: "#f4f7f4", surface: "#FFFFFF", border: "#e2e0da", text: "#1a2e35", textSec: "#4a6670", muted: "#7a9099", fedPill: "#1a3c4d", caPill: "#2a6f5f", ssPill: "#5a8a7a", medPill: "#c9952b", takePill: "#1f9d8b" };
 const font = { sans: "'DM Sans', system-ui, sans-serif" };
 const shadow = { sm: "0 2px 8px rgba(26,26,46,0.06)", md: "0 12px 32px rgba(26,26,46,0.1)", card: "0 4px 16px rgba(26,26,46,0.07)" };
 
@@ -351,17 +349,17 @@ const OB_BG = [
   "#FAFAFA",
 ];
 
-function Onboarding({ onDone }) {
+function Onboarding({ onDone, initialData }) {
   const [step, setStep] = useState(0);
-  const [income, setIncome] = useState(50000);
-  const [status, setStatus] = useState("single");
-  const [stateCode, setStateCode] = useState("CA");
-  const [deps, setDeps] = useState(0);
-  const [incomeType, setIncomeType] = useState("w2");
-  const [hasPenalty, setHasPenalty] = useState(false);
-  const [hasStudentLoans, setHasStudentLoans] = useState(false);
-  const [hasRetirement, setHasRetirement] = useState(false);
-  const [hasHDHP, setHasHDHP] = useState(false);
+  const [income, setIncome] = useState(initialData?.income ?? 50000);
+  const [status, setStatus] = useState(initialData?.status ?? "single");
+  const [stateCode, setStateCode] = useState(initialData?.stateCode ?? "CA");
+  const [deps, setDeps] = useState(initialData?.deps ?? 0);
+  const [incomeType, setIncomeType] = useState(initialData?.incomeType ?? "w2");
+  const [hasPenalty, setHasPenalty] = useState(Boolean(initialData?.hasPenalty));
+  const [hasStudentLoans, setHasStudentLoans] = useState(Boolean(initialData?.hasStudentLoans));
+  const [hasRetirement, setHasRetirement] = useState(Boolean(initialData?.hasRetirement));
+  const [hasHDHP, setHasHDHP] = useState(Boolean(initialData?.hasHDHP));
   const quickPreview = useMemo(
     () => fullCalc(income, status, deps, hasPenalty, 5, true, stateCode),
     [income, status, deps, hasPenalty, stateCode]
@@ -439,6 +437,11 @@ function Onboarding({ onDone }) {
                 <div style={{ marginTop: 28 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: C.textSec, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>State</div>
                   <CustomSelect value={stateCode} onChange={setStateCode} options={STATES} />
+                  {stateCode !== "CA" && (
+                    <p style={{ margin: "8px 0 0", fontSize: 12, color: C.muted, lineHeight: 1.5 }}>
+                      Detailed state modeling is currently California-first. Non-CA selections are directional planning estimates.
+                    </p>
+                  )}
                 </div>
               </>
             )}
@@ -551,6 +554,19 @@ export default function TaxedApp({ session }) {
     setBoarded(true);
   };
   const hasFullAccess = Boolean(entitlement?.full_access);
+
+  useEffect(() => {
+    if (boarded) return;
+    const params = new URLSearchParams(window.location.search);
+    const incomeTypeParam = params.get("incomeType");
+    const stateParam = params.get("state");
+    const statusParam = params.get("status");
+    const incomeParam = Number(params.get("income"));
+    if (incomeTypeParam && ["w2", "1099", "mixed"].includes(incomeTypeParam)) setIncomeType(incomeTypeParam);
+    if (stateParam && STATES.some((s) => s.val === stateParam)) setStateCode(stateParam);
+    if (statusParam && FILING.some((f) => f.value === statusParam)) setStatus(statusParam);
+    if (Number.isFinite(incomeParam) && incomeParam >= 15000 && incomeParam <= 500000) setIncome(Math.round(incomeParam / 500) * 500);
+  }, [boarded]);
 
   useEffect(() => {
     const loadLatestScenario = async () => {
@@ -746,7 +762,14 @@ export default function TaxedApp({ session }) {
     ]
   );
 
-  if (!boarded) return <Onboarding onDone={onBoard} />;
+  if (!boarded) {
+    return (
+      <Onboarding
+        onDone={onBoard}
+        initialData={{ income, status, deps, incomeType, stateCode, hasPenalty, hasStudentLoans, hasRetirement, hasHDHP }}
+      />
+    );
+  }
 
   const sldPct = ((income - 15000) / (500000 - 15000)) * 100;
   const statusLabel = FILING.find(f => f.value === status)?.label || status;
@@ -760,6 +783,10 @@ export default function TaxedApp({ session }) {
       return;
     }
     if (!reportRef.current) return;
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
     const canvas = await html2canvas(reportRef.current, { scale: 2, backgroundColor: C.bg });
     const imgData = canvas.toDataURL("image/jpeg", 1.0);
     const pdf = new jsPDF("p", "mm", "a4");
@@ -769,11 +796,12 @@ export default function TaxedApp({ session }) {
     pdf.save(`Taxed_Report_${stateCode}.pdf`);
   };
 
-  const exportPersonalizedPlan = () => {
+  const exportPersonalizedPlan = async () => {
     if (!hasFullAccess) {
       openPaywall("plan");
       return;
     }
+    const { jsPDF } = await import("jspdf");
 
     const doc = new jsPDF("p", "pt", "letter");
     const margin = 50;
@@ -1318,7 +1346,7 @@ export default function TaxedApp({ session }) {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
                       <div style={{ fontSize: 17, fontWeight: 800, color: C.text }}>Founders Club</div>
-                      <div style={{ fontSize: 14, color: C.textSec, marginTop: 2 }}>$19.99 now for 3 months, then $9.99/mo</div>
+                      <div style={{ fontSize: 14, color: C.textSec, marginTop: 2 }}>$19.99 today for 3 months, then $9.99/mo (USD; taxes may apply)</div>
                     </div>
                     <div style={{ fontFamily: font.sans, fontWeight: 800, color: C.primary, fontSize: 28, whiteSpace: "nowrap" }}>$19.99<span style={{ fontSize: 13, color: C.muted, fontWeight: 600 }}> then $9.99/mo</span></div>
                   </div>
@@ -1345,14 +1373,14 @@ export default function TaxedApp({ session }) {
               <button
                 onClick={handleCheckout}
                 disabled={checkoutLoading}
-                style={{ width: "100%", border: "none", borderRadius: 18, background: selectedPlan === "monthly" ? C.secondary : C.primary, color: "#fff", fontSize: 18, fontWeight: 800, padding: "18px 24px", cursor: checkoutLoading ? "wait" : "pointer", boxShadow: `0 6px 20px ${selectedPlan === "pro" ? C.secondary : C.primary}40`, transition: "all 0.15s" }}
+                style={{ width: "100%", border: "none", borderRadius: 18, background: selectedPlan === "monthly" ? C.secondary : C.primary, color: "#fff", fontSize: 18, fontWeight: 800, padding: "18px 24px", cursor: checkoutLoading ? "wait" : "pointer", boxShadow: `0 6px 20px ${selectedPlan === "monthly" ? C.secondary : C.primary}40`, transition: "all 0.15s" }}
               >
                 {checkoutLoading ? "Starting checkout..." : "Let's go"}
               </button>
               <button onClick={() => setPaywallOpen(false)} style={{ width: "100%", marginTop: 10, border: "none", background: "transparent", color: C.muted, fontSize: 15, fontWeight: 700, padding: "12px", cursor: "pointer" }}>
                 Keep exploring for free
               </button>
-              <p style={{ textAlign: "center", marginTop: 8, fontSize: 13, color: C.muted }}>Secure checkout via Stripe. Founders: $19.99 now, then $9.99/mo after 3 months. Cancel anytime.</p>
+              <p style={{ textAlign: "center", marginTop: 8, fontSize: 13, color: C.muted }}>Secure checkout via Stripe. Founders Club: $19.99 today for 3 months, then $9.99/mo. USD; taxes may apply. Cancel anytime.</p>
             </motion.div>
           </motion.div>
         )}

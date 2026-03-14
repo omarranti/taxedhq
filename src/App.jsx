@@ -45,7 +45,7 @@ const SEO_MAP = {
     },
     "/understand-your-taxes": {
         title: "Understand Your Taxes - Finally See Where Your Money Goes",
-        desc: "TurboTax files your taxes. Taxed explains them. See exactly where your money goes - brackets, deductions, and credits in plain English. Unlock Full Access from $4.99/mo."
+        desc: "TurboTax files your taxes. Taxed explains them. See a clear estimate of where your money goes - brackets, deductions, and credits in plain English. Founders Club: $19.99 today for 3 months, then $9.99/month. USD; taxes may apply."
     },
     "/tax-calculator-take-home-pay": {
         title: "Tax Calculator: See Your Exact Take-Home Pay Before You Decide",

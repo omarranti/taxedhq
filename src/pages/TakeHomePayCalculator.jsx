@@ -89,7 +89,7 @@ export default function TakeHomePayCalculator() {
           <p style={{ margin: "0 0 18px", color: "#4f6478", lineHeight: 1.72 }}>
             Plug in income, filing status, and context, then compare outcomes in minutes. Taxed helps you understand the after-tax reality behind every money decision.
           </p>
-          <Link to="/calculator" style={{ display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none", background: "#1f9d8b", color: "#fff", fontWeight: 700, borderRadius: 999, padding: "12px 18px" }}>
+          <Link to="/calculator?intent=takehome&incomeType=w2" style={{ display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none", background: "#1f9d8b", color: "#fff", fontWeight: 700, borderRadius: 999, padding: "12px 18px" }}>
             Calculate My Take-Home <ArrowRight size={15} />
           </Link>
         </motion.div>

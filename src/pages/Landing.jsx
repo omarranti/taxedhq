@@ -406,7 +406,7 @@ export default function Landing() {
 
           <div style={{ marginTop: 24, ...glass, borderRadius: 16, padding: "16px 18px" }}>
             <p style={{ margin: 0, color: "#102a43", fontWeight: 700, fontSize: "clamp(16px, 1.6vw, 20px)", lineHeight: 1.5 }}>
-              Start free. First 10,000 members: <span style={{ color: "#1f9d8b" }}>$19.99 for 3 months</span>, then $9.99/mo. Offer ends April 15.
+              Start free. Founders Club: <span style={{ color: "#1f9d8b" }}>$19.99 today for 3 months</span>, then $9.99/mo. USD; taxes may apply.
             </p>
           </div>
 
@@ -472,6 +472,7 @@ export default function Landing() {
                   <span style={{ fontSize: 36, fontWeight: 800, color: "#1f9d8b", fontFamily: font.sans }}>$19.99</span>
                 </div>
                 <div style={{ fontSize: 14, color: "#43596e", marginTop: 4, fontWeight: 500 }}>for 3 months, then $9.99/mo</div>
+                <div style={{ fontSize: 12, color: "#6b7d8f", marginTop: 4 }}>USD; taxes may apply</div>
               </div>
               <ul style={{ listStyle: "none", padding: 0, margin: "0 0 32px", display: "grid", gap: 12 }}>
                 {[

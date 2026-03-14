@@ -87,7 +87,7 @@ export default function UnderstandYourTaxes() {
           <p style={{ margin: "0 0 18px", color: "#4f6478", lineHeight: 1.72 }}>
             If you have ever asked “why did my refund change?” or “why do I owe this much?”, this page exists for you. Get visibility before filing season and make better decisions year-round.
           </p>
-          <Link to="/calculator" style={{ display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none", background: "#1f9d8b", color: "#fff", fontWeight: 700, borderRadius: 999, padding: "12px 18px" }}>
+          <Link to="/calculator?intent=understand&incomeType=w2" style={{ display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none", background: "#1f9d8b", color: "#fff", fontWeight: 700, borderRadius: 999, padding: "12px 18px" }}>
             See Your Full Picture <ArrowRight size={15} />
           </Link>
         </motion.div>
