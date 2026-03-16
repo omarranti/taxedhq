@@ -228,13 +228,13 @@ function Bar({ label, amount, amtColor, pct, color, delay = 0 }) {
 function Brackets({ title, brackets, color, total, income }) {
   if (!brackets.length) return (<div style={{ padding: "12px 0" }}><div style={{ fontSize: 14, fontWeight: 700, color: C.muted, marginBottom: 8 }}>{title}</div><div style={{ fontSize: 15, color: C.success, fontWeight: 700 }}>Income below standard deduction — $0 tax ✓</div></div>);
   return (
-    <div style={{ padding: "12px 0" }}>
+    <div className="brackets-component" style={{ padding: "12px 0" }}>
       <div style={{ fontSize: 14, fontWeight: 700, color: C.muted, marginBottom: 12 }}>{title}</div>
       {brackets.map((b, i) => (
-        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0", borderBottom: i < brackets.length - 1 ? `1px solid ${C.border}` : "none" }}>
-          <span style={{ fontSize: 13, fontWeight: 800, padding: "3px 10px", borderRadius: 99, background: `${color}14`, color, whiteSpace: "nowrap" }}>{fmtP(b.rate)}</span>
-          <span style={{ flex: 1, fontSize: 14, color: C.textSec }}>{fmt(b.rangeStart + (i > 0 ? 1 : 0))} – {b.rangeEnd === Infinity ? "∞" : fmt(b.rangeEnd)}</span>
-          <span style={{ fontFamily: font.sans, fontSize: 14, fontWeight: 700, color: C.text, fontVariantNumeric: "tabular-nums" }}>{fmt(b.taxOnBracket)}</span>
+        <div key={i} className="brackets-row" style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0", borderBottom: i < brackets.length - 1 ? `1px solid ${C.border}` : "none" }}>
+          <span style={{ fontSize: 13, fontWeight: 800, padding: "3px 10px", borderRadius: 99, background: `${color}14`, color, whiteSpace: "nowrap", flexShrink: 0 }}>{fmtP(b.rate)}</span>
+          <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: C.textSec }}>{fmt(b.rangeStart + (i > 0 ? 1 : 0))} – {b.rangeEnd === Infinity ? "∞" : fmt(b.rangeEnd)}</span>
+          <span style={{ fontFamily: font.sans, fontSize: 14, fontWeight: 700, color: C.text, fontVariantNumeric: "tabular-nums", flexShrink: 0 }}>{fmt(b.taxOnBracket)}</span>
         </div>
       ))}
       <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 12, marginTop: 8, borderTop: `2px solid ${color}18` }}>
@@ -326,8 +326,9 @@ function CustomSelect({ value, onChange, options, label }) {
                 <button
                   key={o.val}
                   type="button"
+                  className="custom-select-option"
                   onClick={() => { onChange(o.val); setOpen(false); }}
-                  style={{ width: "100%", padding: "12px 16px", background: value === o.val ? `${C.primary}08` : "transparent", border: "none", textAlign: "left", fontSize: 15, color: value === o.val ? C.primary : C.text, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}
+                  style={{ width: "100%", padding: "12px 16px", minHeight: 44, background: value === o.val ? `${C.primary}08` : "transparent", border: "none", textAlign: "left", fontSize: 15, color: value === o.val ? C.primary : C.text, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}
                   onMouseOver={e => { if (value !== o.val) e.currentTarget.style.background = `${C.muted}08`; }}
                   onMouseOut={e => { if (value !== o.val) e.currentTarget.style.background = "transparent"; }}
                 >
@@ -429,7 +430,7 @@ function Onboarding({ onDone, initialData }) {
                 </div>
                 <div style={{ display: "flex", gap: 10, marginTop: 32 }}>
                   {["w2", "1099", "mixed"].map(t => (
-                    <button key={t} onClick={() => setIncomeType(t)} style={{ flex: 1, padding: "14px 0", borderRadius: 12, border: `1px solid ${incomeType === t ? C.primary : C.border}`, background: incomeType === t ? `${C.primary}08` : C.surface, cursor: "pointer", fontSize: 15, fontWeight: 600, fontFamily: font.sans, color: incomeType === t ? C.primary : C.textSec, transition: "all 0.15s" }}>
+                    <button key={t} onClick={() => setIncomeType(t)} className="onboarding-income-type-btn" style={{ flex: 1, padding: "14px 0", minHeight: 44, borderRadius: 12, border: `1px solid ${incomeType === t ? C.primary : C.border}`, background: incomeType === t ? `${C.primary}08` : C.surface, cursor: "pointer", fontSize: 15, fontWeight: 600, fontFamily: font.sans, color: incomeType === t ? C.primary : C.textSec, transition: "all 0.15s" }}>
                       {t === "w2" ? "W-2" : t === "1099" ? "1099" : "Both"}
                     </button>
                   ))}
@@ -1389,6 +1390,8 @@ export default function TaxedApp({ session }) {
         @media (max-width: 768px) {
           .calculator-page { padding-bottom: 100px !important; }
           .calculator-report { padding: 20px 16px !important; max-width: 100% !important; }
+          .brackets-row { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+          .brackets-row span:nth-child(2) { min-width: 0; }
         }
       `}</style>
     </div>

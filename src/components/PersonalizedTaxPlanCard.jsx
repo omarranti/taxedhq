@@ -13,6 +13,7 @@ export default function PersonalizedTaxPlanCard({
 
   return (
     <div
+      className="personalized-tax-plan-card"
       style={{
         background: colors.surface,
         border: `2px solid ${colors.border}`,
@@ -21,7 +22,7 @@ export default function PersonalizedTaxPlanCard({
         boxShadow: shadows.card,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+      <div className="ptp-header" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
         <div
           style={{
             width: 36,
@@ -38,7 +39,7 @@ export default function PersonalizedTaxPlanCard({
           <div style={{ fontSize: 20, fontWeight: 800, color: colors.text }}>{plan.title}</div>
           <div style={{ fontSize: 14, color: colors.textSec }}>{plan.subtitle}</div>
         </div>
-        <div style={{ marginLeft: "auto", fontFamily: fonts.sans, fontSize: 14, fontWeight: 700, color: colors.primary }}>
+        <div style={{ marginLeft: "auto", fontFamily: fonts.sans, fontSize: 14, fontWeight: 700, color: colors.primary, flexShrink: 0 }} className="ptp-impact">
           Est. impact {plan.estimatedTotalImpact}
         </div>
       </div>
@@ -54,19 +55,19 @@ export default function PersonalizedTaxPlanCard({
               background: `${colors.primary}03`,
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-              <CalendarDays size={16} color={colors.primary} />
-              <div style={{ fontSize: 16, fontWeight: 700, color: colors.text }}>{phase.title}</div>
-              <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 700, color: colors.textSec }}>{phase.deadlineLabel}</span>
+            <div className="ptp-phase-header" style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+              <CalendarDays size={16} color={colors.primary} style={{ flexShrink: 0 }} />
+              <div style={{ fontSize: 16, fontWeight: 700, color: colors.text, minWidth: 0 }}>{phase.title}</div>
+              <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 700, color: colors.textSec, flexShrink: 0 }}>{phase.deadlineLabel}</span>
             </div>
             <div style={{ fontSize: 13, color: colors.textSec, marginBottom: 8 }}>
               Estimated impact: <strong style={{ color: colors.primary }}>{phase.estimatedImpact}</strong>
             </div>
             <div style={{ display: "grid", gap: 6 }}>
               {phase.steps.map((step, idx) => (
-                <div key={`${phase.id}-${idx}`} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 14, color: colors.textSec, lineHeight: 1.45 }}>
+                <div key={`${phase.id}-${idx}`} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 14, color: colors.textSec, lineHeight: 1.45, minWidth: 0 }}>
                   <CircleCheck size={14} color={colors.success} style={{ marginTop: 2, flexShrink: 0 }} />
-                  <span>{step}</span>
+                  <span style={{ minWidth: 0 }}>{step}</span>
                 </div>
               ))}
             </div>
@@ -103,10 +104,12 @@ export default function PersonalizedTaxPlanCard({
       <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
         <button
           onClick={hasFullAccess ? onExportPlan : onUnlockPlan}
+          className="ptp-export-btn"
           style={{
             border: "none",
             borderRadius: 12,
             padding: "12px 16px",
+            minHeight: 44,
             background: colors.primary,
             color: "#fff",
             fontSize: 14,

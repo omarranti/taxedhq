@@ -20,7 +20,7 @@ const smoothEase = [0.2, 0.9, 0.25, 1];
 const slamEase = [0.18, 0.85, 0.28, 1];
 const HERO_LINE_ONE = "You File Every Year...";
 const HERO_LINE_TWO = "You Still Don't Know Where the Money Went?";
-const TYPE_SPEED_MS = 22;
+const TYPE_SPEED_MS = 42;
 const HOLD_ONE_MS = 180;
 const HOLD_TWO_MS = 220;
 const FADE_ONE_MS = 220;
@@ -288,7 +288,7 @@ export default function Landing() {
             style={{ ...glass, borderRadius: 22, padding: 16, marginBottom: 16 }}
           >
             <div style={{ borderRadius: 14, overflow: "hidden", border: "1px solid #e2e7ed", background: "#fff", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)" }}>
-              <video src={demoVideoSrc} poster={demoPosterSrc} autoPlay loop muted playsInline preload="metadata" style={{ width: "100%", display: "block", minHeight: 220, objectFit: "cover" }} />
+              <video src={demoVideoSrc} poster={demoPosterSrc} autoPlay loop muted playsInline preload="metadata" className="hero-demo-video" style={{ width: "100%", display: "block", minHeight: 220, aspectRatio: "16/9", objectFit: "cover" }} />
             </div>
           </motion.div>
 
@@ -297,7 +297,7 @@ export default function Landing() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: reduceMotion ? 0 : 0.6, ease: smoothEase }}
-            style={{ ...glass, borderRadius: 18, padding: "16px 18px", display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}
+            style={{ ...glass, borderRadius: 18, padding: "16px 18px", display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))" }}
           >
             {[
               "Covers Federal + California State Taxes",
@@ -571,6 +571,12 @@ export default function Landing() {
         @media (max-width: 560px) {
           .hero-section {
             padding: 106px 14px 56px !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .hero-section {
+            padding: 98px 12px 48px !important;
           }
         }
       `}</style>

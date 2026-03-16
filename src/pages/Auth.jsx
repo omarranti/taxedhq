@@ -17,7 +17,7 @@ const inputStyle = {
   background: "#ffffff",
   color: "#102a43",
   padding: "14px 14px",
-  fontSize: 15,
+  fontSize: 16,
   outline: "none",
 };
 
@@ -83,11 +83,12 @@ export default function Auth({ session }) {
   }, [mode]);
 
   return (
-    <div style={{ minHeight: "calc(100vh - 64px)", padding: "52px 16px 100px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div className="auth-page" style={{ minHeight: "calc(100vh - 64px)", padding: "52px 16px 100px", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <motion.div
         initial={reduceMotion ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 18, filter: "blur(8px)" }}
         animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         transition={{ duration: reduceMotion ? 0 : 0.55 }}
+        className="auth-card"
         style={{ ...card, width: "100%", maxWidth: 460, borderRadius: 24, padding: 30 }}
       >
         <div style={{ marginBottom: 20, textAlign: "center" }}>
@@ -150,6 +151,11 @@ export default function Auth({ session }) {
           </div>
         </div>
       </motion.div>
+      <style>{`
+        @media (max-width: 400px) {
+          .auth-card { padding: 20px 16px !important; }
+        }
+      `}</style>
     </div>
   );
 }

@@ -40,6 +40,7 @@ export default function Navbar({ session, onSignOut, isAdmin, onAdminLogout }) {
         <nav style={{
             position: 'fixed',
             top: 0, left: 0, right: 0,
+            paddingTop: 'env(safe-area-inset-top)',
             ...glass,
             borderBottom: scrolled ? '1px solid rgba(16,42,67,0.08)' : '1px solid transparent',
             transition: 'border-color 0.3s ease',
@@ -142,7 +143,7 @@ export default function Navbar({ session, onSignOut, isAdmin, onAdminLogout }) {
                 <button
                     onClick={() => setIsOpen(!isOpen)}
                     className="nav-mobile-btn"
-                    style={{ background: '#eef4fb', border: '1px solid #d8e3f0', borderRadius: 12, padding: '8px', cursor: 'pointer', color: '#102a43', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{ background: '#eef4fb', border: '1px solid #d8e3f0', borderRadius: 12, padding: '12px', cursor: 'pointer', color: '#102a43', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 44, minHeight: 44 }}
                 >
                     {isOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>

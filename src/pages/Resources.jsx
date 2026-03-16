@@ -177,7 +177,7 @@ export default function Resources() {
               { date: "Apr 15", title: "Tax Day", desc: "Main filing deadline or extension request deadline." },
               { date: "Oct 15", title: "Extension Deadline", desc: "Final deadline if you requested an extension." },
             ].map((d, i) => (
-              <div key={d.date} style={{ display: "grid", gridTemplateColumns: "90px 1fr", gap: 8, padding: "18px 20px", borderBottom: i < 2 ? "1px solid #d8e3f0" : "none" }}>
+              <div key={d.date} className="deadline-row" style={{ display: "grid", gridTemplateColumns: "minmax(70px, 90px) 1fr", gap: 8, padding: "18px 20px", borderBottom: i < 2 ? "1px solid #d8e3f0" : "none" }}>
                 <strong style={{ color: "#1f9d8b" }}>{d.date}</strong>
                 <div>
                   <div style={{ fontWeight: 700, color: "#102a43", marginBottom: 4 }}>{d.title}</div>
@@ -202,6 +202,10 @@ export default function Resources() {
         @media (max-width: 768px) {
           .resources-page { padding: 74px 16px 92px !important; }
           .resources-tools-grid, .resources-guides-grid { gap: 12px !important; }
+        }
+
+        @media (max-width: 400px) {
+          .deadline-row { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>

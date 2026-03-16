@@ -55,7 +55,7 @@ export default function FreelanceTaxCalculator() {
     ],
   };
   return (
-    <div style={{ fontFamily: font.sans, color: "#102a43", minHeight: "100vh", background: "#f5f9ff", padding: "104px 24px 100px" }}>
+    <div className="freelance-page" style={{ fontFamily: font.sans, color: "#102a43", minHeight: "100vh", background: "#f5f9ff", padding: "104px 24px calc(100px + env(safe-area-inset-bottom, 0px))", paddingBottom: "calc(100px + env(safe-area-inset-bottom, 0px))" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <div style={{ maxWidth: 980, margin: "0 auto" }}>
         <motion.div
@@ -97,7 +97,7 @@ export default function FreelanceTaxCalculator() {
           <p style={{ margin: "0 0 18px", color: "#4f6478", lineHeight: 1.72 }}>
             Going freelance is easier when taxes stop being a mystery. Use Taxed to run scenarios, compare outcomes, and make confident decisions before April.
           </p>
-          <Link to="/calculator?intent=freelance&incomeType=1099" style={{ display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none", background: "#1f9d8b", color: "#fff", fontWeight: 700, borderRadius: 999, padding: "12px 18px" }}>
+          <Link to="/calculator?intent=freelance&incomeType=1099" className="freelance-cta" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, textDecoration: "none", background: "#1f9d8b", color: "#fff", fontWeight: 700, borderRadius: 999, padding: "12px 18px", minHeight: 44 }}>
             Estimate My Freelance Taxes <ArrowRight size={15} />
           </Link>
         </motion.div>

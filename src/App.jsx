@@ -181,7 +181,7 @@ export default function App() {
                 <SectionErrorBoundary fallback={<div style={{ height: 68, background: 'rgba(255,255,255,0.82)' }} />}>
                     <Navbar session={session} onSignOut={signOut} isAdmin={isAdmin} onAdminLogout={adminLogout} />
                 </SectionErrorBoundary>
-                <main style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingTop: 64 }}>
+                <main style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingTop: 'calc(68px + env(safe-area-inset-top, 0px))', paddingBottom: 'max(1em, env(safe-area-inset-bottom, 0px))' }}>
                     <SectionErrorBoundary>
                         <Suspense fallback={<RouteFallback />}>
                                 <Routes>

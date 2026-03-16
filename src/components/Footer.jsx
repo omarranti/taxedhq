@@ -83,7 +83,7 @@ export default function Footer() {
                                 aria-label={`${item.label} ${item.handle}`}
                                 onTouchStart={() => setActiveTip(item.id)}
                                 style={{
-                                    width: 34, height: 34, borderRadius: 12,
+                                    width: 44, height: 44, borderRadius: 12,
                                     background: '#eef4fb',
                                     border: '1px solid #d8e3f0',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
